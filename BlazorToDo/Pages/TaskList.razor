@@ -1,4 +1,5 @@
 ﻿@page "/t/all"
+@inject ILocalStorageService localStorage
 
 
 <div class="container-fluid d-flex">
@@ -72,21 +73,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Tasks = new List<Models.TaskModel>()
-        {
-            new Models.TaskModel{Id=1, Completed= false,
-                                Title = "Title of Task 1", Description="This is your task #1",
-                                 CreationDate=DateTime.Now, DueDate=DateTime.Now,
-                                 Tags=new[]{ "First","Urgent"} },
-            new Models.TaskModel{Id=1, Completed= false,
-                                Title = "Title of Task 2", Description="This is your task #2",
-                                 CreationDate=DateTime.Now, DueDate=DateTime.Now,
-                                 Tags=new[]{ "Second","Critical"} },
-            new Models.TaskModel{Id=1, Completed= false,
-                                Title = "Title of Task 3", Description="This is your task #3",
-                                 CreationDate=DateTime.Now, DueDate=DateTime.Now,
-                                 Tags=new[]{ "Third","Optional"} },
-        };
+        var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+        if (!storedTasks.Count.Equals(0) && storedTasks is not null) Tasks = storedTasks;
+
+        //Tasks = new List<Models.TaskModel>()
+        //{
+        //    new Models.TaskModel{Id=1, Completed= false,
+        //                        Title = "Title of Task 1", Description="This is your task #1",
+        //                         CreationDate=DateTime.Now, DueDate=DateTime.Now,
+        //                         Tags=new[]{ "First","Urgent"} },
+        //    new Models.TaskModel{Id=1, Completed= false,
+        //                        Title = "Title of Task 2", Description="This is your task #2",
+        //                         CreationDate=DateTime.Now, DueDate=DateTime.Now,
+        //                         Tags=new[]{ "Second","Critical"} },
+        //    new Models.TaskModel{Id=1, Completed= false,
+        //                        Title = "Title of Task 3", Description="This is your task #3",
+        //                         CreationDate=DateTime.Now, DueDate=DateTime.Now,
+        //                         Tags=new[]{ "Third","Optional"} },
+        //};
     }
 
     void CreateTask() => creationSuccess = !creationSuccess;
