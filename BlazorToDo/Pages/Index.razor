@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject ILocalStorageService localStorage
 
 <PageTitle>Index</PageTitle>
 
@@ -7,3 +8,19 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code{
+    public List<TaskModel> Tasks { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        //Obtain the stored tasks in the local storage of the application
+        var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+        if (storedTasks is not null) Tasks = storedTasks;
+        else
+        {
+            //If there is no task stored, initialize and store in local storage
+            Tasks = new List<TaskModel>();
+            await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
+        }
+    }
+}
