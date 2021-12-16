@@ -38,7 +38,18 @@
                                             <MudText GutterBottom="true">Tags</MudText>
                                             @foreach (var tag in @task.Tags)
                                             {
-                                                <MudChip Color="Color.Secondary">@tag</MudChip>
+                                                @switch (@task.ReportedUrgency)
+                                                {
+                                                    case Urgency.Low:
+                                                        <MudChip Color="Color.Secondary">@tag</MudChip>
+                                                        break;
+                                                    case Urgency.Medium:
+                                                        <MudChip Color="Color.Warning">@tag</MudChip>
+                                                        break;
+                                                    case Urgency.High:
+                                                        <MudChip Color="Color.Error">@tag</MudChip>
+                                                        break;
+                                                }
                                             }
                                         </MudContainer>
                                     </MudCardContent>
@@ -53,6 +64,7 @@
                 else
                 {
                     <MudText Typo="Typo.caption">Loading tasks...</MudText>
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
                 }
                 @*@*</MudContainer>*@
             </MudContainer>
@@ -74,7 +86,9 @@
     protected override async Task OnInitializedAsync()
     {
         var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
-        if (!storedTasks.Count.Equals(0) && storedTasks is not null) Tasks = storedTasks;
+        if (storedTasks != null)
+            if (!storedTasks.Count.Equals(0))
+                Tasks = storedTasks;            
 
         //Tasks = new List<Models.TaskModel>()
         //{
