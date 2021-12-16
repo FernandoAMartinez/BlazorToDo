@@ -1,9 +1,27 @@
 ﻿<MudNavMenu>
-    <MudNavLink Href="/t/all">My Tasks</MudNavLink>
-    <MudNavLink Href="/t/archive">Archive</MudNavLink>
-    <MudNavGroup Title="Settings" Expanded="true">
-        <MudNavLink Href="/u">My User</MudNavLink>
-        <MudNavLink Href="/privacy">Privacy</MudNavLink>
+    <MudContainer>
+        <MudText Typo="Typo.h6" Class="px-4">
+            <MudLink Href="/" Underline="Underline.None">
+                <img src="/TodoIcon.png" class="" style="width:30%; height:30%;"/>
+                My ToDo's
+            </MudLink>
+        </MudText>
+        <MudText Typo="Typo.body1" Class="px-4 mud-text-secondary">Blazor Application</MudText>
+    </MudContainer>
+    <MudDivider Class="my-2" />
+    <MudNavLink Href="/t/all" Icon="@Icons.Filled.Task">My Tasks</MudNavLink>
+    <MudNavLink Href="/t/archive" Icon="@Icons.Filled.Archive">Archive</MudNavLink>
+    <MudNavGroup Title="Settings" Icon="@Icons.Filled.Settings" Expanded="false">
+        <MudNavLink Href="/u" Icon="@Icons.Filled.People" IconColor="Color.Success">My User</MudNavLink>
+        <MudNavLink Href="/privacy" Icon="@Icons.Filled.Security" IconColor="Color.Info">Privacy</MudNavLink>
     </MudNavGroup>
-    <MudNavLink Href="/about">About</MudNavLink>
+    <MudNavLink Href="/about" Icon="@Icons.Filled.Info" IconColor="Color.Tertiary">About</MudNavLink>
+
+    @*<MudNavLink Href="/t/all">My Tasks</MudNavLink>*@
+    @*<MudNavLink Href="/t/archive">Archive</MudNavLink>*@
+    @*<MudNavGroup Title="Settings" Expanded="true">*@
+        @*<MudNavLink Href="/u">My User</MudNavLink>*@
+        @*<MudNavLink Href="/privacy">Privacy</MudNavLink>*@
+    @*</MudNavGroup>*@
+    @*<MudNavLink Href="/about">About</MudNavLink>*@
 </MudNavMenu>

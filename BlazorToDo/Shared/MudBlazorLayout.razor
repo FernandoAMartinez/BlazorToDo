@@ -7,9 +7,20 @@
 <MudLayout>
     <MudAppBar Dense="true" Color="Color.Primary" Fixed="false">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        My To Do Application
+            My ToDo's
         <MudSpacer></MudSpacer>
-        <MudAvatar Color="Color.Tertiary">F</MudAvatar>
+        <MudMenu>
+            <ActivatorContent>
+                <MudAvatar Color="Color.Tertiary">F</MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem>Profile</MudMenuItem>
+                <MudMenuItem>Theme</MudMenuItem>
+                <MudMenuItem>Usage</MudMenuItem>
+                <MudMenuItem>Sign Out</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+
         @*<MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Inherit" Edge="Edge.End"/>*@
     </MudAppBar>
 
@@ -25,7 +36,7 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    bool _drawerOpen = false;
 
     void DrawerToggle() =>  _drawerOpen = !_drawerOpen;
 }
