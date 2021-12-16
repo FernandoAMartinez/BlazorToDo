@@ -1,6 +1,8 @@
 ﻿@page "/t/all"
 @inject ILocalStorageService localStorage
-
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <div class="container-fluid d-flex">
     <div class="row">
@@ -8,10 +10,6 @@
         </div>
         <div class="col-12">
             <MudContainer Fixed="false">
-                @if (creationSuccess)
-                {
-                    <MudAlert AlertTextPosition="AlertTextPosition.Center" Variant="Variant.Outlined" Severity="Severity.Success">Task #4 Created succesfully...</MudAlert>
-                }
                 <MudTextField @bind-Value="SearchValue" Variant="Variant.Outlined" Label="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" Margin="Margin.Dense" />
                 <MudText Typo="Typo.h6">My Tasks</MudText>
                 <MudDivider></MudDivider>
@@ -27,9 +25,12 @@
                                     <MudCardHeader>
                                         <CardHeaderContent>
                                             <MudText Typo="Typo.h6">@task.Title</MudText>
+                                            <MudText Typo="Typo.body2" Class="text-muted">@task.CreationDate.ToShortDateString()</MudText>
                                             <MudSpacer />
-                                            <MudText Typo="Typo.subtitle1">@task.CreationDate.ToShortDateString()</MudText>
                                         </CardHeaderContent>
+                                        <CardHeaderActions>
+                                            <MudText Typo="Typo.subtitle1" Class="text-muted font-weight-bold mt-2 mr-2">#@task.Id</MudText>
+                                        </CardHeaderActions>
                                     </MudCardHeader>
                                     <MudCardContent>
                                         <MudText Typo="Typo.body1">@task.Description</MudText>
@@ -79,7 +80,6 @@
 
 
 @code {
-    bool creationSuccess = false;
     public string SearchValue { get; set; }
     public List<Models.TaskModel> Tasks { get; set; }
 
@@ -89,23 +89,8 @@
         if (storedTasks != null)
             if (!storedTasks.Count.Equals(0))
                 Tasks = storedTasks;            
-
-        //Tasks = new List<Models.TaskModel>()
-        //{
-        //    new Models.TaskModel{Id=1, Completed= false,
-        //                        Title = "Title of Task 1", Description="This is your task #1",
-        //                         CreationDate=DateTime.Now, DueDate=DateTime.Now,
-        //                         Tags=new[]{ "First","Urgent"} },
-        //    new Models.TaskModel{Id=1, Completed= false,
-        //                        Title = "Title of Task 2", Description="This is your task #2",
-        //                         CreationDate=DateTime.Now, DueDate=DateTime.Now,
-        //                         Tags=new[]{ "Second","Critical"} },
-        //    new Models.TaskModel{Id=1, Completed= false,
-        //                        Title = "Title of Task 3", Description="This is your task #3",
-        //                         CreationDate=DateTime.Now, DueDate=DateTime.Now,
-        //                         Tags=new[]{ "Third","Optional"} },
-        //};
     }
 
-    void CreateTask() => creationSuccess = !creationSuccess;
+    //private void CreateTask() => NavigationManager.NavigateTo("/t/new");
+    private void CreateTask() =>  DialogService.Show<NewTask>("Create a New task");
 }

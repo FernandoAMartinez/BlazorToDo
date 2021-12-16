@@ -1,5 +1,7 @@
-﻿<MudNavMenu>
-    <MudContainer>
+﻿@inject NavigationManager NavigationManager
+
+<MudNavMenu>
+    <MudContainer Fixed="true" Class="mt-2">
         <MudText Typo="Typo.h6" Class="px-4">
             <MudLink Href="/" Underline="Underline.None">
                 <img src="/TodoIcon.png" class="" style="width:30%; height:30%;"/>
@@ -16,12 +18,12 @@
         <MudNavLink Href="/privacy" Icon="@Icons.Filled.Security" IconColor="Color.Info">Privacy</MudNavLink>
     </MudNavGroup>
     <MudNavLink Href="/about" Icon="@Icons.Filled.Info" IconColor="Color.Tertiary">About</MudNavLink>
-
-    @*<MudNavLink Href="/t/all">My Tasks</MudNavLink>*@
-    @*<MudNavLink Href="/t/archive">Archive</MudNavLink>*@
-    @*<MudNavGroup Title="Settings" Expanded="true">*@
-        @*<MudNavLink Href="/u">My User</MudNavLink>*@
-        @*<MudNavLink Href="/privacy">Privacy</MudNavLink>*@
-    @*</MudNavGroup>*@
-    @*<MudNavLink Href="/about">About</MudNavLink>*@
+    <MudSpacer/>
+    <MudContainer Fixed="true">
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="NavigateToGithub" Style="text-center"/>
+    </MudContainer>
 </MudNavMenu>
+
+@code{
+    void NavigateToGithub() => NavigationManager.NavigateTo("https://github.com/FernandoAMartinez/");
+}
