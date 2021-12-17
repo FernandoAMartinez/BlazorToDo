@@ -3,82 +3,98 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-<MudDialog>
+<MudDialog Options="new DialogOptions(){Position = DialogPosition.TopCenter}">
     <DialogContent>
         <EditForm Model="@model" OnValidSubmit="@OnValidSubmit">
-        <DataAnnotationsValidator />
+            <DataAnnotationsValidator />
 
-        <MudCard Elevation="0">
-            <MudCardContent>
-                <!-- Task Title -->
-                <MudTextField T="string" @bind-Value="model.Title" For="@(()=> model.Title)" Label="Title" Required="true" RequiredError="Task Title is required!" />
-                <!-- Task Description -->
-                <MudTextField T="string" @bind-Value="model.Description" For="@(()=> model.Description)"
-                              Label="Description" Required="true" RequiredError="Task Description is required!" />
-                <!-- Task Due Date -->
-                <MudTextField T="DateTime" Label="Due Date" @bind-Value="model.DueDate" For="@(()=> model.DueDate)" Required="true" DateFormat="dd/MM/yyyy" />
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <!-- Task Title -->
+                    <MudTextField T="string" @bind-Value="model.Title" For="@(()=> model.Title)" Label="Title" Required="true" RequiredError="Task Title is required!" />
+                    <!-- Task Description -->
+                    <MudTextField T="string" @bind-Value="model.Description" For="@(()=> model.Description)"
+                                  Label="Description" Required="true" RequiredError="Task Description is required!" />
+                    <!-- Task Due Date -->
+                    <MudTextField T="DateTime" Label="Due Date" @bind-Value="model.DueDate" For="@(()=> model.DueDate)" Required="true" Format="dd/MM/yyyy" />
 
-                <!-- Task Urgency -->
-                <MudRadioGroup @bind-SelectedOption="@model.ReportedUrgency" For="(()=>model.ReportedUrgency)">
-                    <MudRadio Option="@(Urgency.Low)" Color="Color.Secondary">Low</MudRadio>
-                    <MudRadio Option="@(Urgency.Medium)" Color="Color.Warning">Medium</MudRadio>
-                    <MudRadio Option="@(Urgency.High)" Color="Color.Error">High</MudRadio>
-                </MudRadioGroup>
+                    <!-- Task Urgency -->
+                    <MudRadioGroup @bind-SelectedOption="@model.ReportedUrgency" For="(()=>model.ReportedUrgency)">
+                        <MudRadio Option="@(Urgency.Low)" Color="Color.Secondary">Low</MudRadio>
+                        <MudRadio Option="@(Urgency.Medium)" Color="Color.Warning">Medium</MudRadio>
+                        <MudRadio Option="@(Urgency.High)" Color="Color.Error">High</MudRadio>
+                    </MudRadioGroup>
 
-                <!-- Task Tags-->
-                <MudPaper Elevation="0">
-                    <MudText Typo="Typo.subtitle1">Tags:</MudText>
-                    <MudChipSet @bind-SelectedChips="selectedTags" MultiSelection="true" Filter="filter">
-                        <MudChip Variant="Variant.Text" Color="Color.Info" Text="Urgent"></MudChip>
-                        <MudChip Variant="Variant.Text" Color="Color.Info" Text="New"></MudChip>
-                        <MudChip Variant="Variant.Text" Color="Color.Info" Text="Work"></MudChip>
-                        <MudChip Variant="Variant.Text" Color="Color.Info" Text="Daily"></MudChip>
-                        <MudChip Variant="Variant.Text" Color="Color.Info" Text="Shop"></MudChip>
-                    </MudChipSet>
+                    <!-- Task Tags-->
+                    <MudPaper Elevation="0">
+                        <MudText Typo="Typo.subtitle1">Tags:</MudText>
+                        <MudChipSet @bind-SelectedChips="selectedTags" MultiSelection="true" Filter="filter">
+                            <MudChip Variant="Variant.Text" Color="Color.Info" Text="Urgent"></MudChip>
+                            <MudChip Variant="Variant.Text" Color="Color.Info" Text="New"></MudChip>
+                            <MudChip Variant="Variant.Text" Color="Color.Info" Text="Work"></MudChip>
+                            <MudChip Variant="Variant.Text" Color="Color.Info" Text="Daily"></MudChip>
+                            <MudChip Variant="Variant.Text" Color="Color.Info" Text="Shop"></MudChip>
+                        </MudChipSet>
 
-                    @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
-                    else { <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText> }
-                </MudPaper>
-            </MudCardContent>
-        </MudCard>
-    </EditForm>
+                        @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
+                        else { <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText> }
+                    </MudPaper>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton OnClick="CancelSubmit">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
     </DialogContent>
-    <DialogActions>
+@*    <DialogActions>
         <MudButton OnClick="CancelSubmit">Cancel</MudButton>
         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
-    </DialogActions>
+    </DialogActions>*@
 </MudDialog>
-
-<MudContainer MaxWidth="MaxWidth.Medium">
-
-    
-</MudContainer>
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    private List<TaskModel> tasks;
     bool filter = true;
     MudChip[] selectedTags;
     TaskModel model = new();
     private bool success;
 
-    private async void OnValidSubmit(EditContext context)
+    protected override async Task OnInitializedAsync()
     {
-        List<TaskModel> Tasks = null;
         var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
         if (storedTasks != null)
         {
             if (!storedTasks.Count.Equals(0))
-                Tasks = storedTasks;
+                tasks = storedTasks;
         }
-        else { Tasks = new List<Models.TaskModel>(); }
+        else { tasks = new List<Models.TaskModel>(); }
+    }
 
-        ((TaskModel)context.Model).Id = Tasks.Max(x => x.Id) + 1;
 
-        if (!Tasks.Contains(context.Model))
+    private async void OnValidSubmit(EditContext context)
+    {
+        //List<TaskModel> Tasks = null;
+        //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+        //if (storedTasks != null)
+        //{
+        //    if (!storedTasks.Count.Equals(0))
+        //        Tasks = storedTasks;
+        //}
+        //else { Tasks = new List<Models.TaskModel>(); }
+
+        //((TaskModel)context.Model).Id = Tasks.Max(x => x.Id) + 1;
+        ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1;
+
+        //if (!Tasks.Contains(context.Model))
+        if (!tasks.Contains(context.Model))
         {
-            Tasks.Add((TaskModel)context.Model);
+            //Tasks.Add((TaskModel)context.Model);
+            tasks.Add((TaskModel)context.Model);
             success = true;
-            await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
+            //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
+            await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", tasks);
             Snackbar.Add($"Task #{((TaskModel)context.Model).Id} created successfully.", Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
         }
