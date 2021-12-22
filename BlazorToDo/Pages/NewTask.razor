@@ -11,12 +11,19 @@
             <MudCard Elevation="0">
                 <MudCardContent>
                     <!-- Task Title -->
-                    <MudTextField T="string" @bind-Value="model.Title" For="@(()=> model.Title)" Label="Title" Required="true" RequiredError="Task Title is required!" />
+                    <MudTextField T="string" @bind-Value="model.Title" For="@(()=> model.Title)" 
+                        Label="Title" Required="true" RequiredError="Task Title is required!" />
                     <!-- Task Description -->
                     <MudTextField T="string" @bind-Value="model.Description" For="@(()=> model.Description)"
-                                  Label="Description" Required="true" RequiredError="Task Description is required!" />
+                        Label="Description" Required="true" RequiredError="Task Description is required!" />
+
+                    <!-- Task Creation Date -->
+                    <MudTextField T="DateTime" @bind-Value="model.CreationDate" For="@(()=> model.CreationDate)" 
+                        Label="Due Date" Required="true" Format="dd/MM/yyyy" Disabled="true"/>
+
                     <!-- Task Due Date -->
-                    <MudTextField T="DateTime" Label="Due Date" @bind-Value="model.DueDate" For="@(()=> model.DueDate)" Required="true" Format="dd/MM/yyyy" />
+                    <MudTextField T="DateTime"@bind-Value="model.DueDate"  For="@(()=> model.DueDate)" 
+                        Label="Due Date" Required="true" Format="dd/MM/yyyy" Validation="@(()=> model.DueDate >= model.CreationDate)" />
 
                     <!-- Task Urgency -->
                     <MudRadioGroup @bind-SelectedOption="@model.ReportedUrgency" For="(()=>model.ReportedUrgency)">
@@ -47,10 +54,10 @@
             </MudCard>
         </EditForm>
     </DialogContent>
-@*    <DialogActions>
+    @*    <DialogActions>
         <MudButton OnClick="CancelSubmit">Cancel</MudButton>
         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
-    </DialogActions>*@
+        </DialogActions>*@
 </MudDialog>
 
 @code {
@@ -63,13 +70,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
-        if (storedTasks != null)
+        try
         {
-            if (!storedTasks.Count.Equals(0))
-                tasks = storedTasks;
+
+            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            if (storedTasks != null)
+            {
+                if (!storedTasks.Count.Equals(0))
+                    tasks = storedTasks;
+            }
+            else { tasks = new List<Models.TaskModel>(); }
         }
-        else { tasks = new List<Models.TaskModel>(); }
+        catch (Exception ex) { }
     }
 
 
@@ -85,31 +97,55 @@
         //else { Tasks = new List<Models.TaskModel>(); }
 
         //((TaskModel)context.Model).Id = Tasks.Max(x => x.Id) + 1;
-        ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1;
+        try
+        {
+            if(tasks is not null) ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1; 
+            else
+            {
+                tasks = new ();
+                ((TaskModel)context.Model).Id = 1; 
+            }
+        }
+        catch(Exception ex)
+        {
+                Snackbar.Add($"Error: { ex.Message }", Severity.Error);
+        }
 
         //if (!Tasks.Contains(context.Model))
-        if (!tasks.Contains(context.Model))
+        if (!tasks.Contains((TaskModel)context.Model))
         {
+            //Update creation day bay today date
+            ((TaskModel)context.Model).CreationDate = DateTime.Now;
             //Tasks.Add((TaskModel)context.Model);
-            tasks.Add((TaskModel)context.Model);
-            success = true;
-            //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
-            await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", tasks);
-            Snackbar.Add($"Task #{((TaskModel)context.Model).Id} created successfully.", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+            try
+            {
+                tasks.Add((TaskModel)context.Model);
+                success = true;
+                //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
+                await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", tasks);
+                Snackbar.Add($"Task #{((TaskModel)context.Model).Id} created successfully.", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                Snackbar.Add($"Error: { ex.Message }", Severity.Error);
+                MudDialog.Close(DialogResult.Cancel);
+            }
         }
-        else 
+        else
         {
             success = false;
             Snackbar.Add($"Something went wrong on task creation.", Severity.Error);
         }
+
         StateHasChanged();
         NavigationManager.NavigateTo("/t/all");
     }
-    private void CancelSubmit() 
-    { 
+    private void CancelSubmit()
+    {
         Snackbar.Add($"Creation canceled.", Severity.Warning);
-        MudDialog.Cancel(); 
+        MudDialog.Cancel();
     }
     private void UpdateTasks(MudChip[] chips) => model.Tags = chips.Select(x => x.Text).ToArray();
 

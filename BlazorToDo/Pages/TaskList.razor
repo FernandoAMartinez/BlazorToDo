@@ -6,68 +6,46 @@
 
 <div class="container-fluid d-flex">
     <div class="row">
-        <div class="col-12">
-        </div>
-        <div class="col-12">
-            <MudContainer Fixed="false">
-                <MudTextField @bind-Value="SearchValue" Variant="Variant.Outlined" Label="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" Margin="Margin.Dense" />
-                <MudText Typo="Typo.h6">My Tasks</MudText>
-                <MudDivider></MudDivider>
 
-                @*<MudContainer Fixed="true" Class="flex-column flex-wrap">*@
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <MudTextField @bind-Value="SearchValue" Variant="Variant.Outlined" Label="Search" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" Margin="Margin.Dense" />
+            <MudText Typo="Typo.h6">My Tasks</MudText>
+            <MudDivider></MudDivider>
+        </div>
+        @*        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">*@
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 row">
+            <MudContainer Fixed="false" MaxWidth="MaxWidth.ExtraLarge">
                 @if (Tasks is not null)
                 {
-                    <MudGrid>
-                        @foreach (var task in Tasks)
-                        {
-                            <MudItem xs="12" sm="12" md="6" lg="4">
-                                <MudCard Elevation="3" Class="m-3 p-0">
-                                    <MudCardHeader>
-                                        <CardHeaderContent>
-                                            <MudText Typo="Typo.h6">@task.Title</MudText>
-                                            <MudText Typo="Typo.body2" Class="text-muted">@task.CreationDate.ToShortDateString()</MudText>
-                                            <MudSpacer />
-                                        </CardHeaderContent>
-                                        <CardHeaderActions>
-                                            <MudText Typo="Typo.subtitle1" Class="text-muted font-weight-bold mt-2 mr-2">#@task.Id</MudText>
-                                        </CardHeaderActions>
-                                    </MudCardHeader>
-                                    <MudCardContent>
-                                        <MudText Typo="Typo.body1">@task.Description</MudText>
-                                        <MudDivider DividerType="DividerType.Middle" Class="my-6" />
-                                        <MudContainer Fixed="true">
-                                            <MudText GutterBottom="true">Tags</MudText>
-                                            @foreach (var tag in @task.Tags)
-                                            {
-                                                @switch (@task.ReportedUrgency)
-                                                {
-                                                    case Urgency.Low:
-                                                        <MudChip Color="Color.Secondary">@tag</MudChip>
-                                                        break;
-                                                    case Urgency.Medium:
-                                                        <MudChip Color="Color.Warning">@tag</MudChip>
-                                                        break;
-                                                    case Urgency.High:
-                                                        <MudChip Color="Color.Error">@tag</MudChip>
-                                                        break;
-                                                }
-                                            }
-                                        </MudContainer>
-                                    </MudCardContent>
-                                    <MudCardActions>
-                                        <MudButton Variant="Variant.Text" Color="Color.Primary">Read More</MudButton>
-                                    </MudCardActions>
-                                </MudCard>
-                            </MudItem>
-                        }
-                    </MudGrid>
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <MudText Typo="Typo.body1">My Pending Tasks</MudText>
+                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                            @foreach (var task in Tasks.Where(x => x.Completed == false).ToList())
+                            {
+                                <MudItem xs="12" sm="12" md="6" lg="4" xl="4" xxl="4">
+                                    <TaskComponent Task=@task></TaskComponent>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <MudText Typo="Typo.body1">My Completed Tasks</MudText>
+                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                            @foreach (var task in Tasks.Where(x => x.Completed == true).ToList())
+                            {
+                                <MudItem xs="12" sm="12" md="6" lg="4" xl="4" xxl="4">
+                                    <TaskComponent Task=@task></TaskComponent>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </div>
                 }
                 else
                 {
                     <MudText Typo="Typo.caption">Loading tasks...</MudText>
                     <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
                 }
-                @*@*</MudContainer>*@
             </MudContainer>
 
         </div>
@@ -81,16 +59,30 @@
 
 @code {
     public string SearchValue { get; set; }
-    public List<Models.TaskModel> Tasks { get; set; }
+    public List<TaskModel> Tasks { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
-        if (storedTasks != null)
-            if (!storedTasks.Count.Equals(0))
-                Tasks = storedTasks;            
+        try
+        {
+            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            if (storedTasks is not null)
+            {
+                if (!storedTasks.Count.Equals(0))
+                {
+                    Tasks = storedTasks;
+                }
+            }
+            else
+            {
+                Tasks = new List<TaskModel>();
+            }
+        }
+        catch (Exception ex) { Tasks = null; }
+
+        StateHasChanged(); ;
     }
 
     //private void CreateTask() => NavigationManager.NavigateTo("/t/new");
-    private void CreateTask() =>  DialogService.Show<NewTask>("Create a New task");
+    private void CreateTask() => DialogService.Show<NewTask>("Create a New task");
 }

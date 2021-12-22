@@ -1,0 +1,79 @@
+﻿@inject ILocalStorageService localStorage
+@inject ISnackbar Snackbar
+
+<MudCard Elevation="2">
+    @if (Task.DueDate < DateTime.Now)
+    {
+        <MudPaper Elevation="2" Style="@($"background-color:{Colors.Red.Darken1}; color:{Colors.Shades.White};")" Class="text-center mb-1">
+            Due task
+        </MudPaper>
+    }
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">@Task.Title</MudText>
+                <MudText Typo="Typo.body2" Class="text-muted">@Task.CreationDate.ToShortDateString()</MudText>
+                <MudSpacer />
+                <MudToggleIconButton Toggled="@Task.Completed" ToggledChanged="OnCompletedTask" Icon="@Icons.Material.Filled.CheckBoxOutlineBlank"
+                ToggledIcon="@Icons.Material.Filled.CheckBox" ToggledColor="Color.Success" ToggledTitle="Completed"/>
+                <span>@(Task.Completed ? "Completed" : "Pending")</span>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudText Typo="Typo.subtitle1" Class="text-muted font-weight-bold mt-2 mr-2">#@Task.Id</MudText>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.body1">@Task.Description</MudText>
+            <MudDivider Light="true" DividerType="DividerType.Middle" Class="my-6" />
+            
+                <MudText GutterBottom="true">Tags</MudText>
+                @foreach (var tag in @Task.Tags)
+                {
+                    @switch (@Task.ReportedUrgency)
+                    {
+                        case Urgency.Low:
+                            <MudChip Color="Color.Secondary">@tag</MudChip>
+                            break;
+                        case Urgency.Medium:
+                            <MudChip Color="Color.Warning">@tag</MudChip>
+                            break;
+                        case Urgency.High:
+                            <MudChip Color="Color.Error">@tag</MudChip>
+                            break;
+                    }
+                }
+        </MudCardContent>
+        <MudCardActions Class="text-center">
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Read More</MudButton>
+            <MudSpacer/>
+            <MudButton Variant="Variant.Text" Color="Color.Error" IconClass="@Icons.Material.Outlined.Delete" OnClick="UpdateListOnDelete">Delete</MudButton>
+        </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public TaskModel Task { get; set; }
+
+    protected async void UpdateListOnDelete()
+    {
+        try
+        {
+            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            //storedTasks.Remove(Task);
+            storedTasks.Remove(storedTasks.Where(x => x.Id == Task.Id).First());
+            await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", storedTasks);
+            Snackbar.Add($"Task #{Task.Id} deleted successfully.", Severity.Success);
+            StateHasChanged();
+        }
+        catch(Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }
+    }
+
+    protected async void OnCompletedTask(bool completed)
+    {
+        var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+        storedTasks.Remove(storedTasks.Where(x => x.Id == Task.Id).First());
+        Task.Completed = completed;
+        storedTasks.Add(Task);
+        await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", storedTasks);
+        if (completed) { Snackbar.Add($"Task #{Task.Id} has been completed.", Severity.Success); }
+        StateHasChanged();
+    }
+}
