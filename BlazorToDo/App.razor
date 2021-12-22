@@ -9,7 +9,8 @@
         <PageTitle>Not found</PageTitle>
         @*<LayoutView Layout="@typeof(MainLayout)">*@
         <LayoutView Layout="@typeof(MudBlazorLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            @*<p role="alert">Sorry, there's nothing at this address.</p>*@
+            <BlazorToDo.Pages.NotFound></BlazorToDo.Pages.NotFound>
         </LayoutView>
     </NotFound>
 </Router>
