@@ -14,7 +14,7 @@
 <MudContainer>
     @if (Tasks is not null)
     {
-        <MudTable Items="@Tasks" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+        <MudTable HeaderClass="table-primary" FixedHeader="true" Items="@Tasks.Where(x => x.Archived == false).ToList()" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
             <HeaderContent>
                 <MudTh>Id</MudTh>
                 <MudTh>Title</MudTh>
@@ -33,19 +33,23 @@
                 <MudTd DataLabel="Due Date">@context.DueDate</MudTd>
                 <MudTd DataLabel="Urgency">@context.ReportedUrgency</MudTd>
                 <MudTd DataLabel="Tags">
-                    @foreach (var tag in @context.Tags)
+                    @if (@context.Tags is not null)
                     {
-                    @switch (@context.ReportedUrgency)
+
+                    @foreach (var tag in @context.Tags)
                         {
-                            case Urgency.Low:
-                            <MudChip Color="Color.Secondary">@tag</MudChip>
-                                break;
-                            case Urgency.Medium:
-                            <MudChip Color="Color.Warning">@tag</MudChip>
-                                break;
-                            case Urgency.High:
-                            <MudChip Color="Color.Error">@tag</MudChip>
-                                break;
+                        @switch (@context.ReportedUrgency)
+                            {
+                                case Urgency.Low:
+                                <MudChip Color="Color.Secondary">@tag</MudChip>
+                                    break;
+                                case Urgency.Medium:
+                                <MudChip Color="Color.Warning">@tag</MudChip>
+                                    break;
+                                case Urgency.High:
+                                <MudChip Color="Color.Error">@tag</MudChip>
+                                    break;
+                            }
                         }
                     }
             </MudTd>
@@ -89,23 +93,32 @@
                 //If there is no task stored, initialize and store in local storage
                 //Tasks = new List<TaskModel>();
                 Tasks = new List<TaskModel>()
-            {
-                new Models.TaskModel{Id=1, Completed= false,
-                                    Title = "Title of Task 1", Description="This is your task #1",
-                                     CreationDate=DateTime.Now, DueDate=DateTime.Now,
-                                     ReportedUrgency = Urgency.Medium,
-                                     Tags=new[]{ "First","Urgent"}},
-                new Models.TaskModel{Id=2, Completed= false,
-                                    Title = "Title of Task 2", Description="This is your task #2",
-                                     CreationDate=DateTime.Now, DueDate=DateTime.Now,
-                                     ReportedUrgency = Urgency.High,
-                                     Tags=new[]{ "Second","Critical"}},
-                new Models.TaskModel{Id=3, Completed= false,
-                                    Title = "Title of Task 3", Description="This is your task #3",
-                                     CreationDate=DateTime.Now, DueDate=DateTime.Now,
-                                     ReportedUrgency = Urgency.Low,
-                                     Tags=new[]{ "Third","Optional"}}
-            };
+                {
+                    new Models.TaskModel{
+                        Id=1,
+                        Completed = false,
+                        Archived = false,
+                        Title = "Title of Task 1", Description="This is your task #1",
+                        CreationDate=DateTime.Now, DueDate=DateTime.Now,
+                        ReportedUrgency = Urgency.Medium,
+                        Tags=new[]{ "First","Urgent"}},
+                    new Models.TaskModel{
+                        Id=2,
+                        Completed = false,
+                        Archived = false,
+                        Title = "Title of Task 2", Description="This is your task #2",
+                        CreationDate=DateTime.Now, DueDate=DateTime.Now,
+                        ReportedUrgency = Urgency.High,
+                        Tags=new[]{ "Second","Critical"}},
+                    new Models.TaskModel{
+                        Id=3,
+                        Completed = false,
+                        Archived = true,
+                        Title = "Title of Task 3", Description="This is your task #3",
+                        CreationDate=DateTime.Now, DueDate=DateTime.Now,
+                        ReportedUrgency = Urgency.Low,
+                        Tags=new[]{ "Third","Optional"}}
+                };
                 //Tasks = new List<Models.TaskModel>();
                 await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
             }
