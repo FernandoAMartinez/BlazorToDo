@@ -11,6 +11,7 @@
         public Urgency ReportedUrgency { get; set; }
         public string[] Tags { get; set; }
         public bool Completed { get; set; }
+        public bool Archived { get; set; }
     }
 
     public enum Urgency

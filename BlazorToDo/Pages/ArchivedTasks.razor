@@ -1,0 +1,104 @@
+﻿@page "/t/archive"
+@inject ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+@*<div class="container-fluid d-flex">*@
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-12">
+            <MudTextField @bind-Value="SearchValue" Variant="Variant.Outlined" Label="Search" Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" Margin="Margin.Dense" />
+            <MudText Typo="Typo.h6">Archived Tasks</MudText>
+            <MudDivider FlexItem="true"></MudDivider>
+        </div>
+        @* <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">*@
+        <div class="col-12 d-flex row pt-3">
+            <MudContainer Fixed="false" MaxWidth="MaxWidth.False" Class="d-flex">
+                @if (Tasks is not null)
+                {
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+@*                        <MudText Typo="Typo.body1">My Completed Tasks</MudText>
+                        <MudDivider></MudDivider>
+*@
+                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                            @foreach (var task in Tasks.Where(x => x.Archived == true).ToList())
+                            {
+                                <MudItem xs="12" sm="12" md="6" lg="3" xl="3" xxl="3">
+                                    @*<MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">*@
+                                    <TaskComponent Task=@task></TaskComponent>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </div>
+                }
+                else
+                {
+                    <MudText Typo="Typo.caption">Loading tasks...</MudText>
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+                }
+            </MudContainer>
+
+        </div>
+        <MudContainer MaxWidth="MaxWidth.False" Fixed="false" Class="d-flex flex-row-reverse fixed-bottom mb-5"
+                      Style="bottom:0; right:0;">
+            <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" aria-label="add"
+                    OnClick="@((e) => CreateTask())" />
+        </MudContainer>
+    </div>
+</div>
+
+
+
+@code {
+    public string SearchValue { get; set; }
+    public List<TaskModel> Tasks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //try
+        //{
+        //    var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+        //    if (storedTasks is not null)
+        //    {
+        //        if (!storedTasks.Count.Equals(0))
+        //        {
+        //            Tasks = storedTasks;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Tasks = new List<TaskModel>();
+        //    }
+        //}
+        //catch (Exception ex) { Tasks = null; }
+
+        base.OnInitializedAsync();
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        try
+        {
+            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            if (storedTasks is not null)
+            {
+                if (!storedTasks.Count.Equals(0))
+                {
+                    Tasks = storedTasks;
+                }
+            }
+            else
+            {
+                Tasks = new List<TaskModel>();
+            }
+        }
+        catch (Exception ex) { Tasks = null; }
+        base.OnParametersSetAsync();
+    }
+
+    //private void CreateTask() => NavigationManager.NavigateTo("/t/new");
+    private void CreateTask() => DialogService.Show<NewTask>("Create a New task");
+}
