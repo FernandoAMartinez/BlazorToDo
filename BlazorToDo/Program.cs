@@ -1,6 +1,7 @@
 using BlazorToDo;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
 
@@ -18,7 +19,10 @@ await builder.Build().RunAsync();
 static void ConfigureServices(IServiceCollection services)
 {
     //Add MudBlazor Reference
-    services.AddMudServices();
+    services.AddMudServices(config =>
+    {
+        config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+    });
 
     //Add LocalStorage Service
     services.AddBlazoredLocalStorage();
