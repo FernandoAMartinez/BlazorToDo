@@ -18,6 +18,7 @@
     {
         High, //Error
         Medium, //Warning
-        Low //Secondary
+        Low, //Secondary
+        NotUrgent
     }
 }

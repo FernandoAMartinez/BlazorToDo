@@ -27,6 +27,7 @@
 
                     <!-- Task Urgency -->
                     <MudRadioGroup @bind-SelectedOption="@model.ReportedUrgency" For="(()=>model.ReportedUrgency)">
+                        <MudRadio Option="@(Urgency.NotUrgent)" Color="Color.Primary">Not Urgent</MudRadio>
                         <MudRadio Option="@(Urgency.Low)" Color="Color.Secondary">Low</MudRadio>
                         <MudRadio Option="@(Urgency.Medium)" Color="Color.Warning">Medium</MudRadio>
                         <MudRadio Option="@(Urgency.High)" Color="Color.Error">High</MudRadio>
