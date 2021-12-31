@@ -19,22 +19,30 @@
             <MudContainer Fixed="false" MaxWidth="MaxWidth.False" Class="d-flex">
                 @if (Tasks is not null)
                 {
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
-@*                        <MudText Typo="Typo.body1">My Completed Tasks</MudText>
-                        <MudDivider></MudDivider>
-*@
-                        <MudGrid Spacing="2" Justify="Justify.FlexStart">
-                            @foreach (var task in Tasks.Where(x => x.Completed == true && x.Archived == false).ToList())
-                            {
-                                <MudItem xs="12" sm="12" md="6" lg="3" xl="3" xxl="3">
-                                    @*<MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">*@
-                                    <TaskComponent Task=@task>
+                        @if (!completedTasks.Count.Equals(0))
+                        {
 
-                                    </TaskComponent>
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+                            @*                        <MudText Typo="Typo.body1">My Completed Tasks</MudText>
+                                <MudDivider></MudDivider>
+                            *@
+                            <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                                @foreach (var task in Tasks.Where(x => x.Completed == true && x.Archived == false).ToList())
+                                {
+                                    <MudItem xs="12" sm="12" md="6" lg="3" xl="3" xxl="3">
+                                        @*<MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">*@
+                                        <TaskComponent Task=@task>
+
+                                        </TaskComponent>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.caption">There are no completed tasks yet...</MudText>
+                    }
                 }
                 else
                 {
@@ -57,9 +65,11 @@
 @code {
     public string SearchValue { get; set; }
     public List<TaskModel> Tasks { get; set; }
+    private List<TaskModel> completedTasks;
 
     protected override async Task OnInitializedAsync()
     {
+
         //try
         //{
         //    var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
@@ -90,6 +100,7 @@
                 if (!storedTasks.Count.Equals(0))
                 {
                     Tasks = storedTasks;
+                    completedTasks = Tasks.Where(x => x.Completed == true && x.Archived == false).ToList();
                 }
             }
             else
