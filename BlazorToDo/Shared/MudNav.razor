@@ -1,30 +1,33 @@
 ﻿@inject NavigationManager NavigationManager
 
-<MudNavMenu>
-    <MudContainer Fixed="true" Class="mt-2">
-        <MudText Typo="Typo.h6" Class="px-4">
-            <MudLink Href="/resume" Underline="Underline.None">
-                <img src="/TodoIcon.png" class="" style="width:30%; height:30%;"/>
-                My ToDo's
-            </MudLink>
-        </MudText>
-        <MudText Typo="Typo.body1" Class="px-4 mud-text-secondary">Blazor Application</MudText>
-    </MudContainer>
-    <MudDivider Class="my-2" />
-    <MudNavLink Href="/t/all" Icon="@Icons.Filled.Task">My Tasks</MudNavLink>
-    <MudNavLink Href="/t/completed" Icon="@Icons.Filled.TaskAlt">Completed</MudNavLink>
-    <MudNavLink Href="/t/archive" Icon="@Icons.Filled.Archive">Archive</MudNavLink>
-    <MudNavGroup Title="Settings" Icon="@Icons.Filled.Settings" Expanded="false">
-        <MudNavLink Href="/u" Icon="@Icons.Filled.People" IconColor="Color.Success">My User</MudNavLink>
-        <MudNavLink Href="/privacy" Icon="@Icons.Filled.Security" IconColor="Color.Info">Privacy</MudNavLink>
-    </MudNavGroup>
-    <MudNavLink Href="/about" Icon="@Icons.Filled.Info" IconColor="Color.Tertiary">About</MudNavLink>
-    <MudSpacer/>
-    <MudTooltip Text="FernandoAMartinez" Placement="Placement.Right">
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="NavigateToGithub" Style="text-center"/>
-    </MudTooltip>
-</MudNavMenu>
+<MudDrawer @bind-Open="SliderOpen" Elevation="2">
+
+    <MudDrawerHeader>
+        <MudLink Href="/resume" Underline="Underline.None">
+            <MudAvatar Color="Color.Default" Size="Size.Large" Image="/TodoIcon.png"/>
+            <MudText Align="Align.Right" Typo="Typo.h6"> My ToDo's </MudText>
+        </MudLink>
+    </MudDrawerHeader>
+    
+    <MudNavMenu>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/t/all" Icon="@Icons.Filled.Task">My Tasks</MudNavLink>
+        <MudNavLink Href="/t/completed" Icon="@Icons.Filled.TaskAlt">Completed</MudNavLink>
+        <MudNavLink Href="/t/archive" Icon="@Icons.Filled.Archive">Archive</MudNavLink>
+        <MudNavGroup Title="Settings" Icon="@Icons.Filled.Settings" Expanded="false">
+            <MudNavLink Href="/u" Icon="@Icons.Filled.People" IconColor="Color.Success">My User</MudNavLink>
+            <MudNavLink Href="/privacy" Icon="@Icons.Filled.Security" IconColor="Color.Info">Privacy</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="/about" Icon="@Icons.Filled.Info" IconColor="Color.Tertiary">About</MudNavLink>
+        <MudSpacer/>
+        <MudTooltip Text="FernandoAMartinez" Placement="Placement.Right">
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="NavigateToGithub" Style="text-center"/>
+        </MudTooltip>
+    </MudNavMenu>
+
+</MudDrawer>
 
 @code{
+    [Parameter] public bool SliderOpen { get; set; }
     void NavigateToGithub() => NavigationManager.NavigateTo("https://github.com/FernandoAMartinez/");
 }

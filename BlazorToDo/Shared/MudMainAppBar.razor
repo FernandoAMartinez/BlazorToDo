@@ -1,0 +1,108 @@
+﻿@inject NavigationManager NavigationManager
+@inject ILocalStorageService localStorage
+@inject ISnackbar snackbarProvider
+
+<MudAppBar Dense="false" Color="Color.Primary" Fixed="true">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                   Color="Color.Inherit"
+                   Edge="Edge.Start"
+                   OnClick="async ()=> await OnSideBarToggled.InvokeAsync()" />
+    @*OnClick="@((e) => DrawerToggle())"/> *@
+    My ToDo's
+    <MudSpacer />
+
+    @if (isLightMode)
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ToggleTheme" />
+    }
+    else
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ToggleTheme" />
+    }
+    @*
+        <MudTooltip Text="Toggle Dark/Light Mode">
+        <MudToggleIconButton
+        ToggledChanged="DarkMode"
+        Icon="@Icons.Filled.ModeNight"
+        ToggledIcon="@Icons.Filled.LightMode"
+        ToggledColor="Color.Info"
+        ToggledTitle="Archived"/>
+        </MudTooltip>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(()=> NavigationManager.NavigateTo("/login") )">Log In</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="@(()=> NavigationManager.NavigateTo("/register") )">Register</MudButton>
+        <MudMenu>
+        <ActivatorContent>
+        <MudAvatar Color="Color.Tertiary">F</MudAvatar>
+        </ActivatorContent>
+        <ChildContent>
+        <MudMenuItem>Profile</MudMenuItem>
+        <MudMenuItem>
+        Theme
+        </MudMenuItem>
+        <MudMenuItem>Usage</MudMenuItem>
+        <MudMenuItem>Sign Out</MudMenuItem>
+        </ChildContent>
+        </MudMenu>*@
+</MudAppBar>
+
+@code {
+    [Parameter] public EventCallback OnSideBarToggled { get; set; }
+
+    [Parameter] public EventCallback<MudTheme> OnThemeToggled { get; set; }
+
+    public bool isLightMode;
+    private bool onInitialize;
+    private MudTheme currentTheme = new MudTheme();
+
+    protected override async Task OnInitializedAsync()
+    {
+        onInitialize = true;
+        try
+        {
+            var lightModeStorage = await localStorage.GetItemAsync<bool>("LightMode");
+            isLightMode = lightModeStorage;
+            await ToggleTheme();
+        }
+        catch (Exception ex)
+        {
+            isLightMode = true;
+            snackbarProvider.Add($"Error at retrieving stored theme. Light Mode set by default", Severity.Info);
+        }
+        finally { onInitialize = false; }
+    }
+
+    private async Task ToggleTheme()
+    {
+        if(!onInitialize) isLightMode = !isLightMode;
+        currentTheme = !isLightMode ? GeneratedDarkTheme() : new MudTheme();
+        await OnThemeToggled.InvokeAsync(currentTheme);
+        await localStorage.SetItemAsync<bool>("LightMode", isLightMode);
+    }
+
+    private MudTheme GeneratedDarkTheme() => new MudTheme()
+        {
+            Palette = new Palette()
+            {
+                Black = "#27272f",
+                Background = "#32333d",
+                BackgroundGrey = "#27272f",
+                Surface = "#373740",
+                DrawerBackground = "#27272f",
+                DrawerText = "rgba(255,255,255, 0.50)",
+                DrawerIcon = "rgba(255,255,255, 0.50)",
+                AppbarBackground = "#27272f",
+                AppbarText = "rgba(255,255,255, 0.70)",
+                TextPrimary = "rgba(255,255,255, 0.70)",
+                TextSecondary = "rgba(255,255,255, 0.50)",
+                ActionDefault = "#adadb1",
+                ActionDisabled = "rgba(255,255,255, 0.26)",
+                ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+                Divider = "rgba(255,255,255, 0.12)",
+                DividerLight = "rgba(255,255,255, 0.06)",
+                TableLines = "rgba(255,255,255, 0.12)",
+                LinesDefault = "rgba(255,255,255, 0.12)",
+                LinesInputs = "rgba(255,255,255, 0.3)",
+                TextDisabled = "rgba(255,255,255, 0.2)"
+            }
+        };
+}

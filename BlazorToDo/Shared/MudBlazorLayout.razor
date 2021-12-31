@@ -1,15 +1,24 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 
-<MudThemeProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Dense="false" Color="Color.Primary" Fixed="true">
+    <MudMainAppBar OnSideBarToggled="DrawerToggle" OnThemeToggled="ToggleTheme"/>
+    @*<MudAppBar Dense="false" Color="Color.Primary" Fixed="true">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
             My ToDo's
         <MudSpacer></MudSpacer>
+        <MudButton OnClick="@((e) => DarkMode())">Toggle Dark/Light Mode</MudButton>
+        <MudTooltip Text="Toggle Dark/Light Mode">
+            <MudToggleIconButton 
+                                 ToggledChanged="DarkMode"
+                                 Icon="@Icons.Filled.ModeNight"
+                                 ToggledIcon="@Icons.Filled.LightMode" 
+                                 ToggledColor="Color.Info" 
+                                 ToggledTitle="Archived"/>
+        </MudTooltip>
         <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(()=> NavigationManager.NavigateTo("/login") )">Log In</MudButton>
         <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="@(()=> NavigationManager.NavigateTo("/register") )">Register</MudButton>
         <MudMenu>
@@ -18,26 +27,34 @@
             </ActivatorContent>
             <ChildContent>
                 <MudMenuItem>Profile</MudMenuItem>
-                <MudMenuItem>Theme</MudMenuItem>
+                <MudMenuItem>
+                    Theme
+                </MudMenuItem>
                 <MudMenuItem>Usage</MudMenuItem>
                 <MudMenuItem>Sign Out</MudMenuItem>
             </ChildContent>
         </MudMenu>
-    </MudAppBar>
+    </MudAppBar>*@
 
-    <MudDrawer @bind-Open="@_drawerOpen">
-        <MudNav/>
-    </MudDrawer>
+
+    <MudNav SliderOpen="@_drawerOpen" />
 
     <MudMainContent>
-    <MudContainer Fixed="false" MaxWidth="MaxWidth.False" Class="p-3">
-        @Body
+        <MudContainer Fixed="false" MaxWidth="MaxWidth.False" Class="p-3">
+            @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
+<MudThemeProvider DefaultScrollbar="false" Theme="currentTheme"/>
+
 @code {
+    private MudTheme currentTheme = new MudTheme();
+
     bool _drawerOpen = false;
 
     void DrawerToggle() =>  _drawerOpen = !_drawerOpen;
+
+    void ToggleTheme(MudTheme changedTheme) => currentTheme = changedTheme;
+
 }
