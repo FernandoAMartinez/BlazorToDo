@@ -47,11 +47,15 @@
             </MudContainer>
 
         </div>
-        <MudContainer MaxWidth="MaxWidth.False" Fixed="false" Class="d-flex flex-row-reverse fixed-bottom mb-5"
+@*        <MudContainer MaxWidth="MaxWidth.False" Fixed="false" Class="d-flex flex-row-reverse fixed-bottom mb-5"
                       Style="bottom:0; right:0;">
             <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" aria-label="add"
                     OnClick="@((e) => CreateTask())" />
-        </MudContainer>
+        </MudContainer>*@
+        <div class="d-flex flex-row-reverse fixed-bottom mb-5" Style="bottom:0; right:0;">
+            <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" aria-label="add"
+                    OnClick="@((e) => CreateTask())"/>
+        </div>
     </div>
 </div>
 
