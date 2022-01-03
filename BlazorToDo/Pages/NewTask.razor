@@ -11,19 +11,19 @@
             <MudCard Elevation="0">
                 <MudCardContent>
                     <!-- Task Title -->
-                    <MudTextField T="string" @bind-Value="model.Title" For="@(()=> model.Title)" 
-                        Label="Title" Required="true" RequiredError="Task Title is required!" />
+                    <MudTextField T="string" @bind-Value="model.Title" For="@(()=> model.Title)"
+                                  Label="Title" Required="true" RequiredError="Task Title is required!" />
                     <!-- Task Description -->
                     <MudTextField T="string" @bind-Value="model.Description" For="@(()=> model.Description)"
-                        Label="Description" Required="true" RequiredError="Task Description is required!" />
+                                  Label="Description" Required="true" RequiredError="Task Description is required!" />
 
                     <!-- Task Creation Date -->
-                    <MudTextField T="DateTime" @bind-Value="model.CreationDate" For="@(()=> model.CreationDate)" 
-                        Label="Due Date" Required="true" Format="dd/MM/yyyy" Disabled="true"/>
+                    <MudTextField T="DateTime" @bind-Value="model.CreationDate" For="@(()=> model.CreationDate)"
+                                  Label="Creation Date" Required="true" Format="dd/MM/yyyy" Disabled="true" />
 
                     <!-- Task Due Date -->
-                    <MudTextField T="DateTime"@bind-Value="model.DueDate"  For="@(()=> model.DueDate)" 
-                        Label="Due Date" Required="true" Format="dd/MM/yyyy" Validation="@(()=> model.DueDate >= model.CreationDate)" />
+                    <MudTextField T="DateTime" @bind-Value="model.DueDate" For="@(()=> model.DueDate)"
+                                  Label="Due Date" Required="true" Format="dd/MM/yyyy" Validation="@(()=> model.DueDate >= model.CreationDate)" />
 
                     <!-- Task Urgency -->
                     <MudRadioGroup @bind-SelectedOption="@model.ReportedUrgency" For="(()=>model.ReportedUrgency)">
@@ -45,12 +45,16 @@
                         </MudChipSet>
 
                         @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
-                        else { <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText> }
+                        else
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText>
+                        }
                     </MudPaper>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton OnClick="CancelSubmit">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+                   
                 </MudCardActions>
             </MudCard>
         </EditForm>
@@ -100,17 +104,14 @@
         //((TaskModel)context.Model).Id = Tasks.Max(x => x.Id) + 1;
         try
         {
-            if(tasks is not null) ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1; 
+            if (tasks is not null) ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1;
             else
             {
-                tasks = new ();
-                ((TaskModel)context.Model).Id = 1; 
+                tasks = new();
+                ((TaskModel)context.Model).Id = 1;
             }
         }
-        catch(Exception ex)
-        {
-                Snackbar.Add($"Error: { ex.Message }", Severity.Error);
-        }
+        catch (Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }
 
         //if (!Tasks.Contains(context.Model))
         if (!tasks.Contains((TaskModel)context.Model))
