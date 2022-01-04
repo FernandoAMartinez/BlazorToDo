@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject ITaskRepository taskRepository
 
 @*<div class="container-fluid d-flex">*@
 <div class="container-fluid">
@@ -29,7 +30,7 @@
                                 {
                                     <MudItem xs="12" sm="12" md="6" lg="3" xl="3" xxl="3">
                                         @*<MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">*@
-                                        <TaskComponent Task=@task></TaskComponent>
+                                        <TaskComponent Task=@task refreshListCallback="RefreshList"></TaskComponent>
                                     </MudItem>
                                 }
                             </MudGrid>
@@ -64,34 +65,14 @@
     public List<TaskModel> Tasks { get; set; }
     private List<TaskModel> archivedTasks;
 
-
-    protected override async Task OnInitializedAsync()
-    {
-        //try
-        //{
-        //    var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
-        //    if (storedTasks is not null)
-        //    {
-        //        if (!storedTasks.Count.Equals(0))
-        //        {
-        //            Tasks = storedTasks;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Tasks = new List<TaskModel>();
-        //    }
-        //}
-        //catch (Exception ex) { Tasks = null; }
-
-        base.OnInitializedAsync();
-    }
+    void RefreshList() => StateHasChanged();
 
     protected async override Task OnParametersSetAsync()
     {
         try
         {
-            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            var storedTasks = await taskRepository.GetAll();
             if (storedTasks is not null)
             {
                 if (!storedTasks.Count.Equals(0))
@@ -106,7 +87,6 @@
             }
         }
         catch (Exception ex) { Tasks = null; }
-        base.OnParametersSetAsync();
     }
 
     //private void CreateTask() => NavigationManager.NavigateTo("/t/new");

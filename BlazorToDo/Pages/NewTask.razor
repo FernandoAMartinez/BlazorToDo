@@ -2,6 +2,7 @@
 @inject ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject ITaskRepository taskRepository
 
 <MudDialog Options="new DialogOptions(){Position = DialogPosition.TopCenter}">
     <DialogContent>
@@ -45,21 +46,18 @@
                         </MudChipSet>
 
                         @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
-                        else
-                        {
-                            <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText>
-                        }
+                        else { <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText> }
                     </MudPaper>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton OnClick="CancelSubmit">Cancel</MudButton>
-<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
                    
                 </MudCardActions>
             </MudCard>
         </EditForm>
     </DialogContent>
-    @*    <DialogActions>
+    @*<DialogActions>
         <MudButton OnClick="CancelSubmit">Cancel</MudButton>
         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
         </DialogActions>*@
@@ -67,6 +65,7 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public EventCallback refreshListCallback { get; set; }
     private List<TaskModel> tasks;
     bool filter = true;
     MudChip[] selectedTags;
@@ -78,7 +77,8 @@
         try
         {
 
-            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            var storedTasks = await taskRepository.GetAll();
             if (storedTasks != null)
             {
                 if (!storedTasks.Count.Equals(0))
@@ -121,10 +121,12 @@
             //Tasks.Add((TaskModel)context.Model);
             try
             {
-                tasks.Add((TaskModel)context.Model);
+                //tasks.Add((TaskModel)context.Model);
                 success = true;
                 //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
-                await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", tasks);
+                //await localStorage.RemoveItemAsync("storedTasks");
+                //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", tasks)
+                await taskRepository.Insert((TaskModel)context.Model);
                 Snackbar.Add($"Task #{((TaskModel)context.Model).Id} created successfully.", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             }
@@ -141,8 +143,9 @@
             Snackbar.Add($"Something went wrong on task creation.", Severity.Error);
         }
 
-        StateHasChanged();
-        NavigationManager.NavigateTo("/t/all");
+        //StateHasChanged();
+        await refreshListCallback.InvokeAsync();
+        //NavigationManager.NavigateTo("/t/all");
     }
     private void CancelSubmit()
     {
@@ -150,5 +153,6 @@
         MudDialog.Cancel();
     }
     private void UpdateTasks(MudChip[] chips) => model.Tags = chips.Select(x => x.Text).ToArray();
+    //private void UpdateTasks(MudChip[] chips) => model.Tags = chips.ToList();
 
 }

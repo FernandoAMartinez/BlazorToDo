@@ -1,16 +1,16 @@
 ﻿@page "/resume"
 @inject ILocalStorageService localStorage
 @inject ISnackbar Snackbar
-@*@inject ITaskRepository TaskRepo*@
+@inject ITaskRepository taskRepository
 
 <PageTitle>Material ToDo's Application</PageTitle>
 <MudAlert Elevation="4" Severity="Severity.Info">App is still on development. Please refer any issue to my Github Repository.</MudAlert>
 <MudSpacer></MudSpacer>
 <MudContainer MaxWidth="MaxWidth.False">
-    <MudText Typo="Typo.h1">Welcome back!</MudText>
+    <MudText Typo="Typo.h4">Welcome back!</MudText>
     <MudText Typo="Typo.subtitle1">Welcome to your new app.</MudText>
 </MudContainer>
-<MudDivider></MudDivider>
+
 <MudContainer>
     @if (Tasks is not null)
     {
@@ -79,12 +79,12 @@
         try
         {
 
-            var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            var storedTasks = await taskRepository.GetAll();
             if (storedTasks != null)
             {
                 if (!storedTasks.Count.Equals(0))
                 {
-                    //Tasks = TaskRepo.GetAll();
                     Tasks = storedTasks;
                 }
             }
@@ -94,7 +94,7 @@
                 //Tasks = new List<TaskModel>();
                 Tasks = new List<TaskModel>()
                 {
-                    new Models.TaskModel{
+                new Models.TaskModel{
                         Id=1,
                         Completed = false,
                         Archived = false,
@@ -120,12 +120,11 @@
                         Tags=new[]{ "Third","Optional"}}
                 };
                 //Tasks = new List<Models.TaskModel>();
-                await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
+                //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
+                await taskRepository.Save(Tasks);
+
             }
         }
-        catch (Exception ex)
-        {
-            Tasks = null;
-        }
+        catch (Exception ex) { Tasks = null; }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
+using BlazorToDo.Repositories;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -26,4 +27,6 @@ static void ConfigureServices(IServiceCollection services)
 
     //Add LocalStorage Service
     services.AddBlazoredLocalStorage();
+
+    services.AddScoped<ITaskRepository, TaskRepository>();
 }
