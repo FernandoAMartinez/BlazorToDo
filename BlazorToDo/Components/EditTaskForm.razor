@@ -1,0 +1,200 @@
+﻿@page "/task/new"
+@page "/task/{id}"
+@inject ITaskRepository taskRepository
+@inject ISnackbar Snackbar
+@inject ILocalStorageService localStorage
+
+<MudDialog Options="new DialogOptions(){Position = DialogPosition.TopCenter}">
+    <DialogContent>
+
+        <EditForm Model="@Task" OnValidSubmit="SubmitTask">
+            <DataAnnotationsValidator />
+
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <!-- Task Title -->
+                    <MudTextField T="string" @bind-Value="Task.Title" For="@(()=> Task.Title)"
+                                    Label="Title" Required="true" RequiredError="Task Title is required!" 
+                                    Disabled="@disable"/>
+                    <!-- Task Description -->
+                    <MudTextField T="string" @bind-Value="Task.Description" For="@(()=> Task.Description)"
+                                    Label="Description" Required="true" RequiredError="Task Description is required!"
+                                     Disabled="@disable"/>
+
+                    <!-- Task Creation Date -->
+                    <MudTextField T="DateTime" @bind-Value="Task.CreationDate" For="@(()=> Task.CreationDate)"
+                                    Label="Creation Date" Required="true" Format="dd/MM/yyyy" Disabled="true" />
+
+                    <!-- Task Due Date -->
+                    <MudTextField T="DateTime" @bind-Value="Task.DueDate" For="@(()=> Task.DueDate)"
+                                    Label="Due Date" Required="true" Format="dd/MM/yyyy" 
+                                    Validation="@(()=> Task.DueDate >= Task.CreationDate)" 
+                                     Disabled="@disable"/>
+
+                    <!-- Task Urgency -->
+                    <MudRadioGroup @bind-SelectedOption="@Task.ReportedUrgency" For="(()=>Task.ReportedUrgency)">
+                        <MudRadio Disabled="@disable" Option="@(Urgency.NotUrgent)" Color="Color.Primary">Not Urgent</MudRadio>
+                        <MudRadio Disabled="@disable" Option="@(Urgency.Low)" Color="Color.Secondary">Low</MudRadio>
+                        <MudRadio Disabled="@disable" Option="@(Urgency.Medium)" Color="Color.Warning">Medium</MudRadio>
+                        <MudRadio Disabled="@disable" Option="@(Urgency.High)" Color="Color.Error">High</MudRadio>
+                    </MudRadioGroup>
+
+                    <!-- Task Tags-->
+                    <MudPaper Elevation="0">
+                        <MudText Typo="Typo.subtitle1">Tags:</MudText>
+                        <MudChipSet @bind-SelectedChips="selectedTags" MultiSelection="true" Filter="filter">
+                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Urgent"></MudChip>
+                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="New"></MudChip>
+                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Work"></MudChip>
+                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Daily"></MudChip>
+                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Shop"></MudChip>
+                        </MudChipSet>
+
+                        @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
+                        else { <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText> }
+                    </MudPaper>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton OnClick="CancelSubmit">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </DialogContent>
+
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public EventCallback refreshListCallback { get; set; }
+    [Parameter] public string Id { get; set; }
+    [Parameter] public EditMode Mode { get; set; }
+
+    public TaskModel Task {get; set;}
+    private List<TaskModel> tasks;
+    private bool success;
+    MudChip[] selectedTags;
+    private bool filter;
+    private bool disable;
+
+    //protected async override Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        switch (Mode)
+        {
+            case EditMode.New:
+                tasks = await taskRepository.GetAll();
+                Task = new();
+                disable = false;
+                break;
+
+            case EditMode.Edit:
+                tasks = await taskRepository.GetAll();
+                Task = taskRepository.GetById(Int32.Parse(Id));
+                if (Task.Completed || Task.Archived)
+                {
+                    Snackbar.Add($"Completed tasks cannot be edited.", Severity.Error);
+                    MudDialog.Close(DialogResult.Cancel);
+                }
+                disable = false;
+                break;
+
+            case EditMode.View:
+                Task = taskRepository.GetById(Int32.Parse(Id));
+                disable = true;
+                break;
+
+        }
+    }
+
+    private async void SubmitTask(EditContext context)
+    {
+        switch (Mode)
+        {
+            //TODO: On new Task insert
+            case EditMode.New:
+                OnNewTask(context);
+                break;
+
+            //TODO: Update Task
+            case EditMode.Edit:
+                OnEditTask(context);
+                break;
+
+            //TODO: On view task, do nothing
+            case EditMode.View:
+                Task = taskRepository.GetById(Int32.Parse(Id));
+                break;
+        }
+    }
+
+    private async void OnNewTask(EditContext context)
+    {
+        //Map the task
+        Task = (TaskModel)context.Model;
+
+        try
+        {
+            if (tasks is not null) Task.Id = tasks.Max(x => x.Id) + 1;
+            else Task.Id = 1;
+        }
+        catch (Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }
+
+        //
+        if (!tasks.Contains(Task))
+        {
+            Task.CreationDate = DateTime.Now;
+
+            try
+            {
+                await taskRepository.Insert(Task);
+                Snackbar.Add($"Task #{Task.Id} created successfully.", Severity.Success);
+                success = true;
+                MudDialog.Close(DialogResult.Ok(true));
+
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                Snackbar.Add($"Error: { ex.Message }", Severity.Error);
+                MudDialog.Close(DialogResult.Cancel);
+            }
+        }
+
+        StateHasChanged();
+        //await refreshListCallback.InvokeAsync();
+    }
+
+    private async void OnEditTask(EditContext context)
+    {
+        //Task = taskRepository.GetById(Int32.Parse(Id));
+        if (tasks.Any(x => x.Id == Task.Id))
+        {
+            try
+            {
+                await taskRepository.Update(Task);
+                Snackbar.Add($"Task #{Task.Id} updated successfully.", Severity.Success);
+                success = true;
+                MudDialog.Close(DialogResult.Ok(true));
+
+            }
+            catch (Exception ex)
+            {
+                success = false;
+                Snackbar.Add($"Error: { ex.Message }", Severity.Error);
+                MudDialog.Close(DialogResult.Cancel);
+            }
+        }
+
+        StateHasChanged();
+        //await refreshListCallback.InvokeAsync();
+    }
+
+    private void CancelSubmit()
+    {
+        Snackbar.Add($"Creation canceled.", Severity.Warning);
+        MudDialog.Cancel();
+    }
+    private void UpdateTasks(MudChip[] chips) => Task.Tags = chips.Select(x => x.Text).ToArray();
+
+}

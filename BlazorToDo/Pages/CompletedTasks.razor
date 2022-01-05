@@ -90,6 +90,18 @@
         catch (Exception ex) { Tasks = null; }
     }
 
-    //private void CreateTask() => NavigationManager.NavigateTo("/t/new");
-    private void CreateTask() => DialogService.Show<NewTask>("Create a New task");
+    //private void CreateTask() => NavigationManager.NavigateTo("/t/new");    
+    //private void CreateTask() => DialogService.Show<NewTask>("Create a New task");
+    private void CreateTask() 
+    {
+        var parameters = new DialogParameters()
+            {
+                ["Mode"] = EditMode.New,
+                ["Id"] = "0",
+                ["refreshListCallback"] = new EventCallbackFactory().Create(this, new Action(RefreshList))
+                //["Mode"] = EditMode.New,
+            };
+        DialogService.Show<EditTaskForm>("Create a New task", parameters); 
+    }
+
 }
