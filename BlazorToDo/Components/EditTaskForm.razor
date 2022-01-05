@@ -114,11 +114,13 @@
             //TODO: On new Task insert
             case EditMode.New:
                 OnNewTask(context);
+                await refreshListCallback.InvokeAsync();
                 break;
 
             //TODO: Update Task
             case EditMode.Edit:
                 OnEditTask(context);
+                await refreshListCallback.InvokeAsync();
                 break;
 
             //TODO: On view task, do nothing
@@ -161,8 +163,8 @@
             }
         }
 
-        StateHasChanged();
-        //await refreshListCallback.InvokeAsync();
+        //StateHasChanged();
+        await refreshListCallback.InvokeAsync();
     }
 
     private async void OnEditTask(EditContext context)
