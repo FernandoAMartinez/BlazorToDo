@@ -1,7 +1,8 @@
-﻿@inject ILocalStorageService localStorage
+﻿@inject NavigationManager navigationManager
+@inject ILocalStorageService localStorage
 @inject ISnackbar Snackbar
-@inject NavigationManager navigationManager
-@inject BlazorToDo.Repositories.ITaskRepository taskRepository
+@inject ITaskRepository taskRepository
+@inject IDialogService DialogService
 
 <MudCard Elevation="2">
     <MudCardHeader>
@@ -69,9 +70,19 @@
 
     <MudCardActions>
         <!-- Edit Task -->
-        <MudTooltip Text="Edit Task">
-            <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Surface" />@* OnClick="EditCurrentTask"*@
-        </MudTooltip>
+        <!-- On Archived Tasks, only view task -->
+        @if(Task.Archived || Task.Completed)
+        {
+            <MudTooltip Text="View Task">
+                <MudIconButton Icon="@Icons.Filled.RemoveRedEye" Color="Color.Surface"  OnClick="ViewCurrentTask"/>
+            </MudTooltip>
+        }
+        else
+        {
+            <MudTooltip Text="Edit Task">
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Surface"  OnClick="EditCurrentTask"/>
+            </MudTooltip>
+        }
         <!-- Completed Task -->
         <MudTooltip Text="Complete">
             <MudToggleIconButton Toggled="@Task.Completed"
@@ -186,4 +197,28 @@
 
     //TODO: Add edit behavior for current task
     //protected async void EditCurrentTask() => navigationManager.NavigateTo($"/test/{Task.Id}");
+    protected void EditCurrentTask()
+    {
+        var parameters = new DialogParameters()
+            {
+                ["Mode"] = EditMode.Edit,
+                ["Id"] = Task.Id.ToString(),
+                ["refreshListCallback"] = new EventCallbackFactory().Create(this, new Action(StateHasChanged))
+                //["Mode"] = EditMode.New,
+            };
+        DialogService.Show<EditTaskForm>("Create a New task", parameters); 
+    }
+
+    //TODO: Add view behavior for current archived or completed task
+    protected void ViewCurrentTask()
+    {
+        var parameters = new DialogParameters()
+            {
+                ["Mode"] = EditMode.View,
+                ["Id"] = Task.Id.ToString(),
+                ["refreshListCallback"] = new EventCallbackFactory().Create(this, new Action(StateHasChanged))
+                //["Mode"] = EditMode.New,
+            };
+        DialogService.Show<EditTaskForm>("Create a New task", parameters); 
+    }
 }

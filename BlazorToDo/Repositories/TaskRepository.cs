@@ -11,31 +11,31 @@ namespace BlazorToDo.Repositories
         }
 
         private ILocalStorageService _localStorage;
-        public List<TaskModel> Tasks { get; set; }
+        private List<TaskModel> tasks;
         public async Task Delete(int id)
         {
-            Tasks.Remove(Tasks.Where(x => x.Id == id).First());
-            await Save(Tasks);
+            tasks.Remove(tasks.Where(x => x.Id == id).First());
+            await Save(tasks);
         }
         public async Task<List<TaskModel>> GetAll()
         {
-            Tasks = await _localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
-            return Tasks;
+            if(tasks is null) tasks = await _localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
+            return tasks;
         }
-        public TaskModel GetById(int id) => Tasks.Where(x => x.Id == id).First();
+        public TaskModel GetById(int id) => tasks.Where(x => x.Id == id).First();
 
         public async Task Insert(TaskModel task) 
         { 
-            Tasks.Add(task);
-            await Save(Tasks);
+            tasks.Add(task);
+            await Save(tasks);
         }
 
         public async Task Update(TaskModel task) 
         {
-            TaskModel modified = Tasks.Where(x => x.Id == task.Id).First();
-            Tasks.RemoveAt(Tasks.IndexOf(modified));
-            Tasks.Add(task);
-            await Save(Tasks);
+            TaskModel modified = tasks.Where(x => x.Id == task.Id).First();
+            tasks.RemoveAt(tasks.IndexOf(modified));
+            tasks.Add(task);
+            await Save(tasks);
         }
 
         public async Task Save(List<TaskModel> tasks) => 

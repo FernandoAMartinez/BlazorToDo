@@ -13,12 +13,4 @@
         public bool Completed { get; set; }
         public bool Archived { get; set; }
     }
-
-    public enum Urgency
-    {
-        High, //Error
-        Medium, //Warning
-        Low, //Secondary
-        NotUrgent
-    }
 }

@@ -7,7 +7,6 @@
                    Color="Color.Inherit"
                    Edge="Edge.Start"
                    OnClick="async ()=> await OnSideBarToggled.InvokeAsync()" />
-    @*OnClick="@((e) => DrawerToggle())"/> *@
     My ToDo's
     <MudSpacer />
 
@@ -19,30 +18,6 @@
     {
         <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ToggleTheme" />
     }
-    @*
-        <MudTooltip Text="Toggle Dark/Light Mode">
-        <MudToggleIconButton
-        ToggledChanged="DarkMode"
-        Icon="@Icons.Filled.ModeNight"
-        ToggledIcon="@Icons.Filled.LightMode"
-        ToggledColor="Color.Info"
-        ToggledTitle="Archived"/>
-        </MudTooltip>
-        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(()=> NavigationManager.NavigateTo("/login") )">Log In</MudButton>
-        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="@(()=> NavigationManager.NavigateTo("/register") )">Register</MudButton>
-        <MudMenu>
-        <ActivatorContent>
-        <MudAvatar Color="Color.Tertiary">F</MudAvatar>
-        </ActivatorContent>
-        <ChildContent>
-        <MudMenuItem>Profile</MudMenuItem>
-        <MudMenuItem>
-        Theme
-        </MudMenuItem>
-        <MudMenuItem>Usage</MudMenuItem>
-        <MudMenuItem>Sign Out</MudMenuItem>
-        </ChildContent>
-        </MudMenu>*@
 </MudAppBar>
 
 @code {
