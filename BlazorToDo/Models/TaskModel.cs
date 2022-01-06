@@ -12,5 +12,6 @@
         public string[] Tags { get; set; }
         public bool Completed { get; set; }
         public bool Archived { get; set; }
+        public List<TaskComment> Comments { get; set; }
     }
 }

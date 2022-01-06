@@ -4,64 +4,168 @@
 @inject ISnackbar Snackbar
 @inject ILocalStorageService localStorage
 
-<MudDialog Options="new DialogOptions(){Position = DialogPosition.TopCenter}">
+<MudDialog Options="new DialogOptions(){Position = DialogPosition.TopCenter, CloseButton = true, NoHeader = true }">
     <DialogContent>
+        <MudContainer Style="max-height: 800px;">
+            <EditForm Model="@Task" OnValidSubmit="SubmitTask">
+                <DataAnnotationsValidator />
 
-        <EditForm Model="@Task" OnValidSubmit="SubmitTask">
-            <DataAnnotationsValidator />
+                <MudCard Elevation="0">
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            @switch (@Task.ReportedUrgency)
+                            {
+                                case Urgency.Low:
+                                    <MudAvatar Size="Size.Large" Color="Color.Secondary">@Task.Id</MudAvatar>
+                                    break;
+                                case Urgency.Medium:
+                                    <MudAvatar Size="Size.Large" Color="Color.Warning">@Task.Id</MudAvatar>
+                                    break;
+                                case Urgency.High:
+                                    <MudAvatar Size="Size.Large" Color="Color.Error">@Task.Id</MudAvatar>
+                                    break;
+                                case Urgency.NotUrgent:
+                                    <MudAvatar Size="Size.Large" Color="Color.Primary">@Task.Id</MudAvatar>
+                                    break;
+                            }
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <!-- Task Title -->
+                            <MudTextField T="string" @bind-Value="Task.Title" For="@(()=> Task.Title)"
+                                          Label="Title" Required="true" RequiredError="Task Title is required!"
+                                          Disabled="@disable" Variant="Variant.Outlined" />
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
 
-            <MudCard Elevation="0">
-                <MudCardContent>
-                    <!-- Task Title -->
-                    <MudTextField T="string" @bind-Value="Task.Title" For="@(()=> Task.Title)"
-                                    Label="Title" Required="true" RequiredError="Task Title is required!" 
-                                    Disabled="@disable"/>
-                    <!-- Task Description -->
-                    <MudTextField T="string" @bind-Value="Task.Description" For="@(()=> Task.Description)"
-                                    Label="Description" Required="true" RequiredError="Task Description is required!"
-                                     Disabled="@disable"/>
+                        <!-- Task Description -->
+                        <MudTextField T="string" @bind-Value="Task.Description" For="@(()=> Task.Description)"
+                                      Label="Description" Required="true" RequiredError="Task Description is required!"
+                                      Disabled="@disable" Variant="Variant.Outlined" Lines="2" />
 
-                    <!-- Task Creation Date -->
-                    <MudTextField T="DateTime" @bind-Value="Task.CreationDate" For="@(()=> Task.CreationDate)"
-                                    Label="Creation Date" Required="true" Format="dd/MM/yyyy" Disabled="true" />
+                        <!-- Task Creation Date -->
+                        <MudTextField T="DateTime" @bind-Value="Task.CreationDate" For="@(()=> Task.CreationDate)"
+                                      Label="Creation Date" Required="true" Format="dd/MM/yyyy" Disabled="true"
+                                      Variant="Variant.Outlined" />
 
-                    <!-- Task Due Date -->
-                    <MudTextField T="DateTime" @bind-Value="Task.DueDate" For="@(()=> Task.DueDate)"
-                                    Label="Due Date" Required="true" Format="dd/MM/yyyy" 
-                                    Validation="@(()=> Task.DueDate >= Task.CreationDate)" 
-                                     Disabled="@disable"/>
+                        <!-- Task Due Date -->
+                        <MudTextField T="DateTime" @bind-Value="Task.DueDate" For="@(()=> Task.DueDate)"
+                                      Label="Due Date" Required="true" Format="dd/MM/yyyy"
+                                      Validation="@(()=> Task.DueDate >= Task.CreationDate)"
+                                      Disabled="@disable" Variant="Variant.Outlined" />
 
-                    <!-- Task Urgency -->
-                    <MudRadioGroup @bind-SelectedOption="@Task.ReportedUrgency" For="(()=>Task.ReportedUrgency)">
-                        <MudRadio Disabled="@disable" Option="@(Urgency.NotUrgent)" Color="Color.Primary">Not Urgent</MudRadio>
-                        <MudRadio Disabled="@disable" Option="@(Urgency.Low)" Color="Color.Secondary">Low</MudRadio>
-                        <MudRadio Disabled="@disable" Option="@(Urgency.Medium)" Color="Color.Warning">Medium</MudRadio>
-                        <MudRadio Disabled="@disable" Option="@(Urgency.High)" Color="Color.Error">High</MudRadio>
-                    </MudRadioGroup>
+                        <!-- Task Urgency -->
+                        <MudRadioGroup @bind-SelectedOption="@Task.ReportedUrgency" For="(()=>Task.ReportedUrgency)">
+                            <MudRadio Disabled="@disable" Option="@(Urgency.NotUrgent)" Color="Color.Primary">Not Urgent</MudRadio>
+                            <MudRadio Disabled="@disable" Option="@(Urgency.Low)" Color="Color.Secondary">Low</MudRadio>
+                            <MudRadio Disabled="@disable" Option="@(Urgency.Medium)" Color="Color.Warning">Medium</MudRadio>
+                            <MudRadio Disabled="@disable" Option="@(Urgency.High)" Color="Color.Error">High</MudRadio>
+                        </MudRadioGroup>
 
-                    <!-- Task Tags-->
-                    <MudPaper Elevation="0">
-                        <MudText Typo="Typo.subtitle1">Tags:</MudText>
-                        <MudChipSet @bind-SelectedChips="selectedTags" MultiSelection="true" Filter="filter">
-                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Urgent"></MudChip>
-                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="New"></MudChip>
-                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Work"></MudChip>
-                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Daily"></MudChip>
-                            <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Shop"></MudChip>
-                        </MudChipSet>
+                        <!-- Task Tags-->
+                        <MudPaper Elevation="0">
+                            <MudText Typo="Typo.subtitle1">Tags:</MudText>
+                            <MudChipSet @bind-SelectedChips="selectedTags" MultiSelection="true" Filter="filter">
+                                <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Urgent"></MudChip>
+                                <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="New"></MudChip>
+                                <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Work"></MudChip>
+                                <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Daily"></MudChip>
+                                <MudChip Disabled="@disable" Variant="Variant.Text" Color="Color.Info" Text="Shop"></MudChip>
+                            </MudChipSet>
 
-                        @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
-                        else { <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText> }
-                    </MudPaper>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton OnClick="CancelSubmit">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </EditForm>
+                            @if (selectedTags != null && selectedTags.Length > 0) UpdateTasks(selectedTags);
+                            else
+                            {
+                                <MudText Typo="Typo.subtitle1" Class="text-muted">Nothing selected.</MudText>
+                            }
+                        </MudPaper>
+
+                        <!-- Comments section -->
+                        <MudPaper Elevation="0">
+                            <MudText Typo="Typo.subtitle1">Comments:</MudText>
+                            @if (Mode == EditMode.New)
+                            {
+                                @if (newComment is not null)
+                                {
+                                    <MudGrid Justify="Justify.FlexStart">
+                                        <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
+                                            <MudTextField T="string" Label="@string.Format($"Comment #{newComment.Id}")"
+                                                  Disabled="@disable" Variant="Variant.Outlined"
+                                                  @bind-Value="newComment.CommentText" Lines="3" />
+                                        </MudItem>
+                                    </MudGrid>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.caption" Class="text-muted">Generating new comment...</MudText>
+                                    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" />
+                                }
+                            }
+                            else
+                            {
+                                <MudContainer Style="max-height: 150px;overflow-y: scroll">
+
+
+                                    @if (Task.Comments is not null)
+                                    {
+                                        <MudGrid>
+                                            @foreach (var comment in Task.Comments)
+                                            {
+                                                <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12"
+                                             Class="d-flex row">
+                                                    <MudElement HtmlTag="div" Class="d-flex align-center col-2 mr-n3">
+
+                                                        @*<MudItem xs="2" sm="2" md="2" lg="2" xl="2" xxl="2">*@
+                                                        <MudAvatar Color="Color.Secondary">
+                                                            @comment.Id
+                                                        </MudAvatar>
+                                                        @*</MudItem>*@
+                                                    </MudElement>
+
+                                                    <MudElement HtmlTag="div" Class="d-flex flex-column align-stretch col-9">
+                                                        @*<MudItem xs="8" sm="8" md="8" lg="8" xl="8" xxl="8">*@
+                                                        <MudTextField T="string" Label="@string.Format($"Comment #{comment.Id}")"
+                                                          Disabled="@disable" Variant="Variant.Filled"
+                                                          Text="@comment.CommentText" Lines="2" />
+                                                        @*</MudItem>*@
+                                                    </MudElement>
+
+                                                    <MudElement HtmlTag="div" Class="d-flex align-stretch col-1">
+
+                                                        @*<MudItem xs="2" sm="2" md="2" lg="2" xl="2" xxl="2">*@
+                                                        <MudIconButton Variant="Variant.Outlined"
+                                                           Icon="@Icons.Material.Filled.Delete"
+                                                           Color="Color.Error" Disabled="@disable"
+                                                           OnClick="@(()=>Task.Comments.Remove(comment))" />
+                                                        @*</MudItem>*@
+                                                    </MudElement>
+                                                </MudItem>
+                                            }
+                                        </MudGrid>
+                                    }
+                                </MudContainer>
+                                @*<MudText Typo="Typo.subtitle1" Class="text-muted">There ar no comments yet.</MudText>*@
+                                @if (newComment is not null)
+                                {
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
+                                            <MudTextField T="string" Label="@string.Format($"Comment #{newComment.Id}")"
+                                                  Disabled="@disable" Variant="Variant.Outlined"
+                                                  @bind-Value="newComment.CommentText" Lines="3" />
+                                        </MudItem>
+                                    </MudGrid>
+                                }
+                            }
+                        </MudPaper>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton OnClick="CancelSubmit">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </MudContainer>
     </DialogContent>
-
 </MudDialog>
 
 @code {
@@ -70,12 +174,13 @@
     [Parameter] public string Id { get; set; }
     [Parameter] public EditMode Mode { get; set; }
 
-    public TaskModel Task {get; set;}
+    public TaskModel Task { get; set; }
     private List<TaskModel> tasks;
     private bool success;
     MudChip[] selectedTags;
     private bool filter;
     private bool disable;
+    private TaskComment newComment;
 
     //protected async override Task OnParametersSetAsync()
     protected override async Task OnInitializedAsync()
@@ -85,6 +190,11 @@
             case EditMode.New:
                 tasks = await taskRepository.GetAll();
                 Task = new();
+                newComment = new TaskComment()
+                    {
+                        CommentDate = DateTime.Now,
+                        Id = 1
+                    };
                 disable = false;
                 break;
 
@@ -96,6 +206,11 @@
                     Snackbar.Add($"Completed tasks cannot be edited.", Severity.Error);
                     MudDialog.Close(DialogResult.Cancel);
                 }
+                newComment = new TaskComment
+                    {
+                        CommentDate = DateTime.Now,
+                        Id = Task.Comments != null ? Task.Comments.Count + 1 : 1
+                    };
                 disable = false;
                 break;
 
@@ -147,6 +262,12 @@
         {
             Task.CreationDate = DateTime.Now;
 
+            if (Task.Comments is null)
+            {
+                if (newComment is not null)
+                    Task.Comments = new List<TaskComment>() { newComment };
+            }
+
             try
             {
                 await taskRepository.Insert(Task);
@@ -172,6 +293,13 @@
         //Task = taskRepository.GetById(Int32.Parse(Id));
         if (tasks.Any(x => x.Id == Task.Id))
         {
+            if (Task.Comments is null)
+            {
+                if (newComment is not null)
+                    Task.Comments = new List<TaskComment>() { newComment };
+            }
+            else { Task.Comments.Add(newComment); }
+
             try
             {
                 await taskRepository.Update(Task);
@@ -194,7 +322,24 @@
 
     private void CancelSubmit()
     {
-        Snackbar.Add($"Creation canceled.", Severity.Warning);
+        switch (Mode)
+        {
+            //TODO: On new Task insert
+            case EditMode.New:
+                Snackbar.Add($"Creation cancelled.", Severity.Warning);
+                break;
+
+            //TODO: Update Task
+            case EditMode.Edit:
+                Snackbar.Add($"Update cancelled.", Severity.Warning);
+                break;
+
+            //TODO: On view task, do nothing
+            case EditMode.View:
+                break;
+        }
+
+        //Snackbar.Add($"Creation canceled.", Severity.Warning);
         MudDialog.Cancel();
     }
     private void UpdateTasks(MudChip[] chips) => Task.Tags = chips.Select(x => x.Text).ToArray();

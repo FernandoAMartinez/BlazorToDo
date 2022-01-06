@@ -23,6 +23,8 @@ static void ConfigureServices(IServiceCollection services)
     services.AddMudServices(config =>
     {
         config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+        config.SnackbarConfiguration.ShowCloseIcon = true;
+        config.SnackbarConfiguration.NewestOnTop = true;
     });
 
     //Add LocalStorage Service
