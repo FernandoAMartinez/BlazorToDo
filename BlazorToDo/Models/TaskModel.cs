@@ -1,4 +1,4 @@
-﻿using System.COmponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BlazorToDo.Models
 {
