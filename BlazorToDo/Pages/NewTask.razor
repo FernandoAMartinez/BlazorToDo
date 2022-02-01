@@ -51,8 +51,7 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton OnClick="CancelSubmit">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
-                   
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
                 </MudCardActions>
             </MudCard>
         </EditForm>
@@ -118,14 +117,9 @@
         {
             //Update creation day bay today date
             ((TaskModel)context.Model).CreationDate = DateTime.Now;
-            //Tasks.Add((TaskModel)context.Model);
             try
             {
-                //tasks.Add((TaskModel)context.Model);
                 success = true;
-                //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", Tasks);
-                //await localStorage.RemoveItemAsync("storedTasks");
-                //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", tasks)
                 await taskRepository.Insert((TaskModel)context.Model);
                 Snackbar.Add($"Task #{((TaskModel)context.Model).Id} created successfully.", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
