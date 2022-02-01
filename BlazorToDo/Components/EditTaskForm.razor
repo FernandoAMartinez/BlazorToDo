@@ -6,7 +6,7 @@
 
 <MudDialog Options="new DialogOptions(){Position = DialogPosition.TopCenter, CloseButton = true, NoHeader = true }">
     <DialogContent>
-        <MudContainer Style="max-height: 800px;">
+        <MudContainer Style="max-height: 800px;overflow-y: scroll">
             <EditForm Model="@Task" OnValidSubmit="SubmitTask">
                 <DataAnnotationsValidator />
 
@@ -91,7 +91,7 @@
                                         <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
                                             <MudTextField T="string" Label="@string.Format($"Comment #{newComment.Id}")"
                                                   Disabled="@disable" Variant="Variant.Outlined"
-                                                  @bind-Value="newComment.CommentText" Lines="3" />
+                                                  @bind-Value="newComment.CommentText" Lines="2" />
                                         </MudItem>
                                     </MudGrid>
                                 }
@@ -111,40 +111,33 @@
                                         <MudGrid>
                                             @foreach (var comment in Task.Comments)
                                             {
-                                                <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12"
-                                             Class="d-flex row">
+                                                <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12" Class="d-flex row">
                                                     <MudElement HtmlTag="div" Class="d-flex align-center col-2 mr-n3">
 
-                                                        @*<MudItem xs="2" sm="2" md="2" lg="2" xl="2" xxl="2">*@
                                                         <MudAvatar Color="Color.Secondary">
                                                             @comment.Id
                                                         </MudAvatar>
-                                                        @*</MudItem>*@
                                                     </MudElement>
 
                                                     <MudElement HtmlTag="div" Class="d-flex flex-column align-stretch col-9">
-                                                        @*<MudItem xs="8" sm="8" md="8" lg="8" xl="8" xxl="8">*@
                                                         <MudTextField T="string" Label="@string.Format($"Comment #{comment.Id}")"
                                                           Disabled="@disable" Variant="Variant.Filled"
                                                           Text="@comment.CommentText" Lines="2" />
-                                                        @*</MudItem>*@
                                                     </MudElement>
 
                                                     <MudElement HtmlTag="div" Class="d-flex align-stretch col-1">
 
-                                                        @*<MudItem xs="2" sm="2" md="2" lg="2" xl="2" xxl="2">*@
                                                         <MudIconButton Variant="Variant.Outlined"
                                                            Icon="@Icons.Material.Filled.Delete"
                                                            Color="Color.Error" Disabled="@disable"
                                                            OnClick="@(()=>Task.Comments.Remove(comment))" />
-                                                        @*</MudItem>*@
                                                     </MudElement>
                                                 </MudItem>
                                             }
                                         </MudGrid>
                                     }
                                 </MudContainer>
-                                @*<MudText Typo="Typo.subtitle1" Class="text-muted">There ar no comments yet.</MudText>*@
+
                                 @if (newComment is not null)
                                 {
                                     <MudGrid>

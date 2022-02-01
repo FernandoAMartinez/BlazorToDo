@@ -103,6 +103,17 @@
         <MudTooltip Text="Delete">
             <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="UpdateListOnDelete" />
         </MudTooltip>
+
+        <!-- Comments -->
+        @if(Task.Comments is not null)
+        {
+            @if(!Task.Comments.Count.Equals(0))
+            {
+                <MudBadge Content="@Task.Comments?.Count" Color="Color.Primary" Overlap="true">
+                    <MudIcon Icon="@Icons.Filled.Comment" Color="@Color.Inherit"/>
+                </MudBadge>
+            }
+        }
     </MudCardActions>
 </MudCard>
 
@@ -131,21 +142,12 @@
         {
             try
             {
-                //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
                 var storedTasks = await taskRepository.GetAll();
-                //storedTasks.Remove(Task);
-                //storedTasks.Remove(storedTasks.Where(x => x.Id == Task.Id).First());
                 await taskRepository.Delete(Task.Id);
-                //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", storedTasks);
                 Snackbar.Add($"Task #{Task.Id} deleted successfully.", Severity.Success);
-                //StateHasChanged();
             }
             catch (Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }
-            finally
-            {
-                //StateHasChanged();
-                await refreshListCallback.InvokeAsync();
-            }
+            finally { await refreshListCallback.InvokeAsync(); }
         }
     }
 
@@ -153,46 +155,32 @@
     {
         try
         {
-            //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
             var storedTasks = await taskRepository.GetAll();
-            //storedTasks.Remove(storedTasks.Where(x => x.Id == Task.Id).First());
             await taskRepository.Delete(Task.Id);
             Task.Completed = completed;
-            //storedTasks.Add(Task);
             await taskRepository.Insert(Task);
-            //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", storedTasks);
+
             if (completed) { Snackbar.Add($"Task #{Task.Id} has been completed.", Severity.Success); }
             else { Snackbar.Add($"Task #{Task.Id} is pending again.", Severity.Warning); }
         }
         catch (Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }
-        finally
-        {
-            //StateHasChanged();
-            await refreshListCallback.InvokeAsync();
-        }
+        finally { await refreshListCallback.InvokeAsync(); }
     }
 
     protected async void OnArchivedTask(bool archived)
     {
         try
         {
-            //var storedTasks = await localStorage.GetItemAsync<List<TaskModel>>("storedTasks");
             var storedTasks = await taskRepository.GetAll();
-            //storedTasks.Remove(storedTasks.Where(x => x.Id == Task.Id).First());
             await taskRepository.Delete(Task.Id);
             Task.Archived = archived;
             //storedTasks.Add(Task);
             await taskRepository.Insert(Task);
-            //await localStorage.SetItemAsync<List<TaskModel>>("storedTasks", storedTasks);
             if (archived) { Snackbar.Add($"Task #{Task.Id} has been archived.", Severity.Info); }
             else { Snackbar.Add($"Task #{Task.Id} has been unarchived.", Severity.Warning); }
         }
         catch (Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }
-        finally
-        {
-            //StateHasChanged();
-            await refreshListCallback.InvokeAsync();
-        }
+        finally { await refreshListCallback.InvokeAsync(); }
     }
 
     //TODO: Add edit behavior for current task
