@@ -103,11 +103,13 @@
         //((TaskModel)context.Model).Id = Tasks.Max(x => x.Id) + 1;
         try
         {
-            if (tasks is not null) ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1;
+            //if (tasks is not null) ((TaskModel)context.Model).Id = tasks.Max(x => x.Id) + 1;
+            if (tasks is not null) ((TaskModel)context.Model).TaskId = tasks.Max(x => x.TaskId) + 1;
             else
             {
                 tasks = new();
-                ((TaskModel)context.Model).Id = 1;
+                //((TaskModel)context.Model).Id = 1;
+                ((TaskModel)context.Model).TaskId = 1;
             }
         }
         catch (Exception ex) { Snackbar.Add($"Error: { ex.Message }", Severity.Error); }

@@ -1,9 +1,15 @@
-﻿namespace BlazorToDo.Models
+﻿using System.Text.Json.Serialization;
+
+namespace BlazorToDo.Models;
+public class TaskComment
 {
-    public class TaskComment
+    public TaskComment()
     {
-        public int Id { get; set; }
-        public string CommentText { get; set; }
-        public DateTime CommentDate { get; set; }
+
     }
+    [JsonPropertyName("_id")] public Guid Id { get; set; }
+    [JsonPropertyName("taskId")] public Guid TaskId { get; set; }
+    [JsonPropertyName("commentId")] public int CommentId { get; set; }
+    [JsonPropertyName("commentText")] public string CommentText { get; set; }
+    [JsonPropertyName("commentDate")] public DateTime CommentDate { get; set; }
 }

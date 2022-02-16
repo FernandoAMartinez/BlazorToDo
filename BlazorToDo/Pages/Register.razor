@@ -1,0 +1,98 @@
+﻿@layout AuthLayout
+@page "/auth/register"
+@inject HttpClient client
+@inject NavigationManager navigation
+@inject IAuthRepository repository
+@inject ISnackbar Snackbar
+
+<EditForm Model="@model" OnValidSubmit="OnValidRegisterSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h3">Register form</MudText>
+                        <MudText Typo="Typo.body1">Please register in order to use the application</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="model.Name" For="@(() => model.Name)" />
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="model.Email" For="@(() => model.Email)" />
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="model.PasswordValidator" For="@(() => model.PasswordValidator)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Disabled="@processing" ButtonType="ButtonType.Submit" Variant="Variant.Filled" 
+                        Color="Color.Success" Class="ml-auto rounded-xl">
+                        @if (processing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                            <MudText Class="ms-2">Registering...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Register</MudText>
+                        }
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                @if (success)
+                {
+                    <MudText Color="Color.Success"> Success </MudText>
+                }
+                else
+                {
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Fill out the form correctly to see the success message.
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+@code {
+    RegisterRequest model = new();
+
+    bool success;
+    bool processing;
+
+
+    private async void OnValidRegisterSubmit()
+    {
+        processing = true;
+
+        try
+        {
+            await repository.RegisterUserAsync(model);
+            Snackbar.Add($"User registered successfully.", Severity.Success);
+            success = true;
+            navigation.NavigateTo("/auth/login");
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: { ex.Message }", Severity.Error);
+            success = false;
+            navigation.NavigateTo("/");
+        }
+        finally { processing = false; }
+
+        StateHasChanged();
+    }
+}

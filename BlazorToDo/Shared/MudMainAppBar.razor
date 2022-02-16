@@ -7,8 +7,11 @@
                    Color="Color.Inherit"
                    Edge="Edge.Start"
                    OnClick="async ()=> await OnSideBarToggled.InvokeAsync()" />
-    My ToDo's
-    <MudSpacer />
+    Blazor's Task Manager
+
+    <MudSpacer/>
+
+    <LoginLogoutStatusButton/>
 
     @if (isLightMode)
     {
@@ -54,7 +57,8 @@
         await localStorage.SetItemAsync<bool>("LightMode", isLightMode);
     }
 
-    private MudTheme GeneratedDarkTheme() => new MudTheme()
+    private MudTheme GeneratedDarkTheme() => 
+    new MudTheme()
         {
             Palette = new Palette()
             {

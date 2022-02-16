@@ -1,6 +1,52 @@
 ﻿@page "/"
+@layout AuthLayout
+@inject ISnackbar Snackbar
 @inject NavigationManager navigation
+@*@attribute [Authorize]*@
+
+<MudContainer Fixed="true" MaxWidth="MaxWidth.False">
+
+    <MudAlert CloseIcon="true" Severity="Severity.Info" Dense="true" Elevation="3" Class="m-3" Variant="Variant.Text">
+        App is still in development, if issues are encountered please refer to Github Repository to report them.
+    </MudAlert>
+
+    <MudPaper Elevation="3" Class="pa-3" Style="@($"background:{Colors.DeepPurple.Lighten2}")">
+        <MudText Typo="Typo.h4" Class="fw-bold"> Welcome to your new Task Manager </MudText>
+        <MudDivider Light="true" DividerType="DividerType.Middle" Class="my-2"/>
+        <MudText Typo="Typo.body1">
+            Built in .NET6 and MongoDB, this application will retrieve your task data with high speed and responsiveness.
+
+        </MudText>
+    </MudPaper>
+
+    <MudPaper Elevation="3" Class="pa-3 my-3" Style="@($"background:{Colors.Teal.Lighten3}")">
+        <MudText Typo="Typo.h5"> Features </MudText>
+        <MudDivider Light="true" DividerType="DividerType.Middle" Class="my-2"/>
+        <MudText Typo="Typo.body1">
+            <MudList>
+                <MudListItem Icon="@Icons.Material.Rounded.Login" IconColor="Color.Secondary">
+                    User Authorization
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Outlined.Task" IconColor="Color.Secondary">
+                    Task Management
+                </MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.Comment" IconColor="Color.Secondary">
+                    Task Comments
+                </MudListItem>
+            </MudList>
+        </MudText>
+    </MudPaper>
+</MudContainer>
 
 @code {
-    protected override async Task OnInitializedAsync() => navigation.NavigateTo("/resume");
+    [CascadingParameter] public Task<AuthenticationState> AuthStateTask { get; set; }
+    private AuthenticationState authState { get; set; }
+
+    //protected override async Task OnInitializedAsync() => navigation.NavigateTo("/resume");
+    protected async override Task OnParametersSetAsync()
+    {
+        authState = await AuthStateTask;
+
+        navigation.NavigateTo("/resume");
+    }
 }

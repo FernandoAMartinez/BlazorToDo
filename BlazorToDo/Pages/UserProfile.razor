@@ -1,0 +1,28 @@
+﻿@page "/u"
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject ITaskRepository taskRepository
+@inject NavigationManager navigation
+@inject ILocalStorageService localStorage
+
+@attribute [Authorize]
+
+<MudContainer>
+        @if(user_id is not null)
+        {
+            <MudText Typo="Typo.body1">
+                @user_id.ToString()
+            </MudText>
+        }
+</MudContainer>
+
+
+@code {
+    private string user_id;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        user_id = await localStorage.GetItemAsStringAsync("user_id");
+    }
+
+}
