@@ -19,9 +19,7 @@ ConfigureServices(builder.Services);
 //builder.Services .AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7258") });
 builder.Services.AddHttpClient("TodosAPI", client =>
 {
-    var api = Environment.GetEnvironmentVariable("API_ENDPOINT");
-    //client.BaseAddress = new Uri("https://blazors-todo.herokuapp.com/");
-    client.BaseAddress = new Uri(api);
+    client.BaseAddress = new Uri("https://blazors-todo.herokuapp.com/");
 }).AddHttpMessageHandler<AuthorizationMessageHandler>();
 
 builder.Services.AddTransient<AuthorizationMessageHandler>();
