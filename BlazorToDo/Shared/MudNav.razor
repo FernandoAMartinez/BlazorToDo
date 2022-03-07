@@ -1,29 +1,44 @@
 ﻿@inject NavigationManager NavigationManager
 
-<MudDrawer @bind-Open="SliderOpen" Elevation="2">
+<MudDrawer @bind-Open="SliderOpen" Elevation="2" ClipMode="DrawerClipMode.Docked">
 
-    <MudDrawerHeader>
-        <MudLink Href="/resume" Underline="Underline.None">
-            <MudAvatar Color="Color.Default" Size="Size.Large" Image="/TodoIcon.png"/>
-            <MudText Align="Align.Right" Typo="Typo.h6"> My ToDo's </MudText>
-        </MudLink>
+    <MudDrawerHeader Class="d-flex flex-column align-items-center">
+            <MudLink Href="/resume" Underline="Underline.None">
+                <MudAvatar Color="Color.Default" Size="Size.Large" Image="/TodoIcon.png"/>
+            </MudLink>
+            
+            <MudLink Href="/resume" Underline="Underline.None">
+                <MudText Align="Align.Right" Typo="Typo.h6"> Blazor Tasks </MudText>
+            </MudLink>
     </MudDrawerHeader>
     
     <MudNavMenu>
-        <MudDivider Class="my-2" />
-        <MudNavLink Href="/tasks/pending" Icon="@Icons.Filled.Task">Pending</MudNavLink>
-        <MudNavLink Href="/tasks/completed" Icon="@Icons.Filled.TaskAlt">Completed</MudNavLink>
-        <MudNavLink Href="/tasks/archive" Icon="@Icons.Filled.Archive">Archive</MudNavLink>
+        <MudNavGroup Title="Tasks" Icon="@Icons.Filled.Task">
+            <MudNavLink Href="/tasks/pending" Icon="@Icons.Filled.Pending" IconColor="Color.Info">Pending</MudNavLink>
+            <div class="my-1"/>
+            <MudNavLink Href="/tasks/completed" Icon="@Icons.Filled.TaskAlt" IconColor="Color.Success">Completed</MudNavLink>
+            <div class="my-1"/>
+            <MudNavLink Href="/tasks/archive" Icon="@Icons.Filled.Archive" IconColor="Color.Tertiary">Archive</MudNavLink>
+        </MudNavGroup>
+
+        <div class="my-1"/>
+            
         <MudNavGroup Title="Settings" Icon="@Icons.Filled.Settings" Expanded="false">
+            <div class="my-1"/>
             <MudNavLink Href="/u" Icon="@Icons.Filled.People" IconColor="Color.Success">My User</MudNavLink>
+            <div class="my-1"/>
             <MudNavLink Href="/privacy" Icon="@Icons.Filled.Security" IconColor="Color.Info">Privacy</MudNavLink>
         </MudNavGroup>
+
+        <MudDivider Class="my-2"/>
+        
         <MudNavLink Href="/about" Icon="@Icons.Filled.Info" IconColor="Color.Tertiary">About</MudNavLink>
-        <MudSpacer/>
-        <MudTooltip Text="FernandoAMartinez" Placement="Placement.Right">
+    </MudNavMenu>
+    <MudDrawerContainer Class="d-flex justify-content-center mt-auto"> 
+        <MudTooltip Text="FernandoAMartinez" Placement="Placement.Top">
             <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="NavigateToGithub" Style="text-center"/>
         </MudTooltip>
-    </MudNavMenu>
+    </MudDrawerContainer>
 
 </MudDrawer>
 
