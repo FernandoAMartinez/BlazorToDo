@@ -1,10 +1,8 @@
-﻿namespace BlazorToDo.Models
+﻿namespace BlazorToDo.Models;
+public enum Urgency
 {
-    public enum Urgency
-    {
-        High, //Error
-        Medium, //Warning
-        Low, //Secondary
-        NotUrgent
-    }
+    High, //Error
+    Medium, //Warning
+    Low, //Secondary
+    NotUrgent
 }

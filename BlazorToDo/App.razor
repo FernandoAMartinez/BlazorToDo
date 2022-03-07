@@ -1,16 +1,30 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-            @*<RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />*@
-            @*Add Mud Blazor Layout Refernece*@
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MudBlazorLayout)" />
-            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        @*<LayoutView Layout="@typeof(MainLayout)">*@
-        <LayoutView Layout="@typeof(MudBlazorLayout)">
-            @*<p role="alert">Sorry, there's nothing at this address.</p>*@
-            <BlazorToDo.Pages.NotFound></BlazorToDo.Pages.NotFound>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+                @*<RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />*@
+                @*Add Mud Blazor Layout Refernece*@
+                @*<RouteView RouteData="@routeData" DefaultLayout="@typeof(MudBlazorLayout)" />*@
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MudBlazorLayout)">
+                    
+                    <Authorizing>
+                        <h4>Redirecting to your url...</h4>
+                    </Authorizing>
+
+                    <NotAuthorized>
+                        <h3>You're not authorized</h3>
+                    </NotAuthorized>
+
+                </AuthorizeRouteView>
+
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            @*<LayoutView Layout="@typeof(MainLayout)">*@
+            <LayoutView Layout="@typeof(MudBlazorLayout)">
+                @*<p role="alert">Sorry, there's nothing at this address.</p>*@
+                <BlazorToDo.Pages.NotFound></BlazorToDo.Pages.NotFound>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

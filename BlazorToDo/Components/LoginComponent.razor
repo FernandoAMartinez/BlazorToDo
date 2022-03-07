@@ -1,0 +1,90 @@
+﻿@inject ISnackbar Snackbar
+@inject IAuthRepository repository
+@inject NavigationManager navigation
+@inject ILocalStorageService localStorage
+@inject AuthenticationStateProvider authStateProvider
+
+<EditForm Model="@model" OnValidSubmit="OnValidLoginSubmit">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">Welcome to your To Do's App</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTextField Label="Email" Class="mt-3"
+                            @bind-Value="model.Email" For="@(() => model.Email)" Placeholder="your@email.com" />
+            <MudTextField Label="Password" Class="mt-3"
+                            @bind-Value="model.Password" For="@(() => model.Password)" Placeholder="password" 
+                            HelperText="Choose a strong password" 
+                            InputType="InputType.Password" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Class="rounded-xl"
+                OnClick="NavigateToRegister">
+                Create Account
+            </MudButton>
+
+            <MudSpacer/>
+            
+            <MudButton Disabled="@procesing" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                Color="Color.Success" Class="rounded-xl">
+                    @if (procesing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                        <MudText Class="ms-2">Authenticating...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Log In</MudText>
+                    }
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@code {
+    LoginRequest model = new();
+    private bool procesing = false;
+    //bool success;
+
+    void NavigateToRegister() => navigation.NavigateTo("/auth/register");
+
+    async Task OnValidLoginSubmit()
+    {
+        try
+        {
+            procesing = true;
+
+            var result = await repository.LoginUserAsync(model);
+
+            if(result is not null)
+            {
+
+                Snackbar.Add($"User logged in successfully.", Severity.Success);
+
+                await localStorage.SetItemAsStringAsync("user_id", result.UserId);
+                await localStorage.SetItemAsStringAsync("access_token", result.JWT);
+
+                await authStateProvider.GetAuthenticationStateAsync();
+
+                navigation.NavigateTo("/resume");
+            }
+            else
+            {
+                Snackbar.Add($"Login failed", Severity.Error);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: { ex.Message }", Severity.Error);
+            navigation.NavigateTo("/");
+        }
+        finally
+        {
+            procesing = false;
+        }
+
+        StateHasChanged();
+    }
+}

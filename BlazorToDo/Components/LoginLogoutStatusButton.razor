@@ -1,0 +1,60 @@
+﻿@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject ILocalStorageService localStorage
+@inject AuthenticationStateProvider authStateProvider
+@attribute [Authorize]
+
+<AuthorizeView>
+    <Authorized>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Logout" 
+            Color="Color.Error" OnClick="LogOutAsync" Class="rounded-xl">
+            Log out
+        </MudButton>
+
+        <div class="mx-1"></div>
+
+        <!-- TODO: Add menu list for the logged user, and Avatar for it's login -->
+        <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+            <MudAvatar>A</MudAvatar>
+        </MudBadge>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.EditNote" 
+            Color="Color.Info" OnClick="RegisterAsync" Class="rounded-xl">
+            Register
+        </MudButton>
+
+        <div class="mx-1"></div>
+
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Login"
+            Color="Color.Tertiary" OnClick="LoginAsync" Class="rounded-xl">
+            Login
+        </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private string loggedUserId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(string.IsNullOrEmpty(loggedUserId))
+            loggedUserId = await localStorage.GetItemAsStringAsync("user_id");
+        //return base.OnParametersSetAsync();
+    }
+
+    async void LogOutAsync()
+    {
+        await localStorage.RemoveItemAsync("user_id");
+        await localStorage.RemoveItemAsync("access_token");
+
+        Snackbar.Add($"Logged Out succesfully", Severity.Warning);
+
+        await authStateProvider.GetAuthenticationStateAsync();
+        //Navigation.NavigateTo("auth/login");
+        Navigation.NavigateTo("/");
+    }
+    void LoginAsync() => Navigation.NavigateTo("auth/login");
+    void RegisterAsync() => Navigation.NavigateTo("auth/register");
+}

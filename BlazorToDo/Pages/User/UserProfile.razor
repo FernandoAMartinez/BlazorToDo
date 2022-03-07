@@ -1,0 +1,32 @@
+﻿@page "/u"
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject ITaskRepository taskRepository
+@inject NavigationManager navigation
+@inject ILocalStorageService localStorage
+
+@attribute [Authorize]
+
+<MudContainer Fixed="false">
+    <div class="row">
+        <div class="col-12 d-flex align-items-center">
+            @if(user_id is not null)
+            {
+                <MudAvatar Color="Color.Default" Size="Size.Large">
+                    @user_id.Substring(0, 1).ToString().ToUpper()
+                </MudAvatar>
+            }
+        </div>
+    </div>
+</MudContainer>
+
+
+@code {
+    private string user_id;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        user_id = await localStorage.GetItemAsStringAsync("user_id");
+    }
+
+}

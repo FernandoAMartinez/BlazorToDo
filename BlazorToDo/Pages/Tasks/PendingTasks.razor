@@ -1,0 +1,45 @@
+﻿@page "/tasks/pending"
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject ITaskRepository taskRepository
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <MudTextField @bind-Value="SearchValue" Variant="Variant.Outlined" Label="Search" Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" Margin="Margin.Dense" />
+            <MudText Typo="Typo.h6">Pending Tasks</MudText>
+            <MudDivider FlexItem="true"></MudDivider>
+        </div>
+        <div class="col-12 d-flex row pt-3">
+            <TaskList FilterArchived="false" FilterCompleted="false" refreshListCallback="RefreshList"/>
+        </div>
+        <div class="d-flex flex-row-reverse fixed-bottom mb-5" Style="bottom:0; right:0;">
+            <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" aria-label="add"
+                    OnClick="@((e) => CreateTask())"/>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    public string SearchValue { get; set; }
+
+    void RefreshList() => StateHasChanged();
+
+    private void CreateTask() 
+    {
+        var parameters = new DialogParameters()
+            {
+                ["Mode"] = EditMode.New,
+                //["Id"] = "0",
+                ["Guid"] = new Guid(),
+                ["refreshListCallback"] = new EventCallbackFactory().Create(this, new Action(RefreshList))
+                //["Mode"] = EditMode.New,
+            };
+        DialogService.Show<EditTaskForm>("New task", parameters); 
+    }
+}

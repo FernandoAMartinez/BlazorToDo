@@ -1,9 +1,7 @@
-﻿namespace BlazorToDo.Models
+﻿namespace BlazorToDo.Models;
+public enum EditMode
 {
-    public enum EditMode
-    {
-        View, 
-        Edit, 
-        New
-    }
+    View, 
+    Edit, 
+    New
 }
