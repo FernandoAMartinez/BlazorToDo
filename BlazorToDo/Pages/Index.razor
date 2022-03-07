@@ -2,6 +2,7 @@
 @layout AuthLayout
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
+@inject ILocalStorageService localStorage
 @*@attribute [Authorize]*@
 
 <MudContainer Fixed="true" MaxWidth="MaxWidth.False">
@@ -47,6 +48,9 @@
     {
         authState = await AuthStateTask;
 
-        //navigation.NavigateTo("/resume");
+        if(await localStorage.ContainKeyAsync("user_id"))
+        {
+            navigation.NavigateTo("/resume");
+        }
     }
 }

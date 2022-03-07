@@ -14,9 +14,9 @@
         <div class="mx-1"></div>
 
         <!-- TODO: Add menu list for the logged user, and Avatar for it's login -->
-        <MudAvatar>
-            F
-        </MudAvatar>
+        <MudBadge Color="Color.Success" Overlap="true" Bordered="true">
+            <MudAvatar>A</MudAvatar>
+        </MudBadge>
     </Authorized>
     <NotAuthorized>
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.EditNote" 
@@ -52,7 +52,6 @@
         Snackbar.Add($"Logged Out succesfully", Severity.Warning);
 
         await authStateProvider.GetAuthenticationStateAsync();
-
         //Navigation.NavigateTo("auth/login");
         Navigation.NavigateTo("/");
     }
